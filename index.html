@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- =========================================================
+       Remedy Lane — Online Pharmacy Landing Page
+       Concept project by Arshdeep Kaur. Fictional brand.
+       Single file, no build step, no external JS/CSS frameworks.
+       ========================================================= -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Remedy Lane — Medicines & Wellness Delivered in Chandigarh</title>
+  <meta name="description" content="Order medicines, vitamins and wellness products online, book lab tests at home and consult doctors by video. Delivery across Chandigarh, Mohali and Panchkula within 24 hours." />
+  <meta name="author" content="Arshdeep Kaur" />
+  <meta name="theme-color" content="#123a33" />
+  <link rel="canonical" href="https://arshiiiverse.github.io/remedy-lane/" />
+  <meta property="og:title" content="Remedy Lane — Healthcare delivered to your doorstep" />
+  <meta property="og:description" content="Medicines, lab tests and doctor consultations — delivered within 24 hours." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://arshiiiverse.github.io/remedy-lane/" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23123a33'/%3E%3Cpath d='M32 16v32M16 32h32' stroke='%2337d39b' stroke-width='9' stroke-linecap='round'/%3E%3C/svg%3E" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Pharmacy",
+    "name": "Remedy Lane",
+    "description": "Online pharmacy with 24-hour medicine delivery, home lab tests and video doctor consultations.",
+    "areaServed": ["Chandigarh", "Mohali", "Panchkula"],
+    "url": "https://arshiiiverse.github.io/remedy-lane/"
+  }
+  </script>
+
+  <style>
+    /* ---------- Tokens ---------- */
+    :root {
+      --ink: #10231f;
+      --ink-soft: #3d524d;
+      --muted: #6b7f7a;
+      --line: #e3ebe8;
+      --bg: #f4f7f6;
+      --surface: #ffffff;
+      --brand: #123a33;        /* deep pine */
+      --brand-2: #1c5a4f;
+      --mint: #37d39b;         /* action green */
+      --mint-dark: #1fb07d;
+      --mint-tint: #e6f8f0;
+      --coral: #ff7a59;        /* discounts / badges */
+      --sun: #ffc845;
+      --radius: 18px;
+      --shadow: 0 18px 40px -22px rgba(16, 35, 31, .35);
+    }
+
+    /* ---------- Base ---------- */
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      color: var(--ink); background: var(--bg); line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3, h4, p { margin: 0; }
+    a { color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; color: inherit; }
+    button { cursor: pointer; border: 0; background: none; }
+    img, svg { display: block; max-width: 100%; }
+    ul { list-style: none; margin: 0; padding: 0; }
+    :focus-visible { outline: 2px solid var(--mint-dark); outline-offset: 3px; border-radius: 8px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+    .wrap { width: 100%; max-width: 1240px; margin-inline: auto; padding-inline: 20px; }
+    @media (min-width: 768px) { .wrap { padding-inline: 32px; } }
+    section { padding-block: 56px; scroll-margin-top: 130px; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+      height: 48px; padding: 0 1.4rem; border-radius: 999px; font-weight: 700; font-size: .95rem;
+      transition: background .2s, color .2s, transform .15s, box-shadow .2s; white-space: nowrap;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn-mint { background: var(--mint); color: var(--brand); }
+    .btn-mint:hover { background: #4fe0ab; box-shadow: 0 10px 24px -10px rgba(55, 211, 155, .8); }
+    .btn-ghost { border: 1.5px solid rgba(255,255,255,.55); color: #fff; }
+    .btn-ghost:hover { background: rgba(255,255,255,.1); }
+    .btn-dark { background: var(--brand); color: #fff; }
+    .btn-dark:hover { background: var(--brand-2); }
+    .btn-outline { border: 1.5px solid var(--brand); color: var(--brand); background: #fff; }
+    .btn-outline:hover { background: var(--brand); color: #fff; }
+
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 28px; flex-wrap: wrap; }
+    .section-head h2 { font-size: clamp(1.6rem, 3vw, 2.1rem); font-weight: 800; letter-spacing: -.02em; }
+    .section-head p { color: var(--muted); margin-top: 4px; }
+    .link-arrow { font-weight: 700; color: var(--brand-2); display: inline-flex; align-items: center; gap: .35rem; }
+    .link-arrow:hover { color: var(--mint-dark); }
+
+    /* ---------- Top strip ---------- */
+    .strip { background: var(--brand); color: #cfe9e1; font-size: .8rem; }
+    .strip .wrap { display: flex; justify-content: space-between; gap: 1rem; padding-block: 8px; }
+    .strip b { color: var(--mint); }
+    .strip .hide-sm { display: none; }
+    @media (min-width: 768px) { .strip .hide-sm { display: block; } }
+
+    /* ---------- Header ---------- */
+    .header { position: sticky; top: 0; z-index: 40; background: rgba(255,255,255,.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+    .header-row { display: flex; align-items: center; gap: 14px; height: 72px; }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.2rem; letter-spacing: -.02em; flex-shrink: 0; }
+    .logo-mark { width: 36px; height: 36px; border-radius: 11px; background: var(--brand); display: grid; place-items: center; }
+    .search {
+      flex: 1; display: none; align-items: center; height: 46px; background: var(--bg);
+      border: 1px solid var(--line); border-radius: 999px; padding: 0 6px 0 16px; gap: 10px;
+    }
+    .search select { border: 0; background: transparent; font-weight: 600; font-size: .85rem; padding-right: 4px; }
+    .search .divider { width: 1px; height: 22px; background: var(--line); }
+    .search input { flex: 1; border: 0; background: transparent; outline: none; font-size: .9rem; min-width: 0; }
+    .search button { width: 36px; height: 36px; border-radius: 50%; background: var(--brand); color: #fff; display: grid; place-items: center; }
+    .location { display: none; align-items: center; gap: 10px; font-size: .78rem; color: var(--muted); }
+    .location .pin { width: 38px; height: 38px; border-radius: 50%; background: #fff1ec; color: var(--coral); display: grid; place-items: center; }
+    .location b { display: block; color: var(--ink); font-size: .9rem; }
+    .icon-btn { position: relative; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; background: #fff; flex-shrink: 0; }
+    .icon-btn:hover { border-color: var(--brand); }
+    .cart-count {
+      position: absolute; top: -4px; right: -4px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 999px;
+      background: var(--coral); color: #fff; font-size: .7rem; font-weight: 800; display: grid; place-items: center;
+      transform: scale(0); transition: transform .2s;
+    }
+    .cart-count.show { transform: scale(1); }
+    .cart-count.bump { animation: bump .35s; }
+    @keyframes bump { 50% { transform: scale(1.35); } }
+    .account { display: none; align-items: center; gap: 10px; font-size: .78rem; color: var(--muted); }
+    .account .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--mint-tint); color: var(--brand); font-weight: 800; display: grid; place-items: center; }
+    .account b { display: block; color: var(--ink); font-size: .9rem; }
+    .header-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+    @media (min-width: 900px) { .search { display: flex; } .header-right { margin-left: 0; } }
+    @media (min-width: 1100px) { .location, .account { display: flex; } }
+
+    .cat-nav { display: flex; gap: 8px; overflow-x: auto; padding-block: 10px 14px; scrollbar-width: none; }
+    .cat-nav::-webkit-scrollbar { display: none; }
+    .cat-nav a {
+      flex-shrink: 0; height: 38px; padding: 0 16px; border-radius: 999px; background: var(--bg);
+      display: inline-flex; align-items: center; gap: 6px; font-size: .85rem; font-weight: 600; color: var(--ink-soft);
+      transition: background .2s, color .2s;
+    }
+    .cat-nav a:hover { background: var(--brand); color: #fff; }
+    .cat-nav .dot { width: 7px; height: 7px; border-radius: 50%; }
+
+    /* ---------- Hero ---------- */
+    .hero { padding-top: 24px; padding-bottom: 0; }
+    .hero-card {
+      position: relative; overflow: hidden; border-radius: 28px; color: #fff;
+      background: radial-gradient(700px 400px at 90% 10%, #1f6b5d 0%, transparent 60%), var(--brand);
+      padding: 40px 24px 0;
+    }
+    @media (min-width: 768px) { .hero-card { padding: 56px 56px 0; } }
+    .hero-grid { display: grid; gap: 32px; align-items: center; }
+    @media (min-width: 960px) { .hero-grid { grid-template-columns: 1.05fr 1fr; } }
+    .trust { display: inline-flex; align-items: center; gap: 12px; font-size: .85rem; color: #cfe9e1; }
+    .faces { display: flex; }
+    .faces span { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--brand); display: grid; place-items: center; font-size: .7rem; font-weight: 800; color: var(--brand); }
+    .faces span + span { margin-left: -9px; }
+    .stars { color: var(--sun); letter-spacing: 1px; }
+    .hero h1 { font-size: clamp(2.3rem, 5.4vw, 3.9rem); line-height: 1.04; font-weight: 800; letter-spacing: -.035em; margin-top: 22px; }
+    .hero h1 em { font-style: normal; color: var(--mint); }
+    .hero-lead { color: #cfe9e1; font-size: 1.05rem; max-width: 470px; margin-top: 18px; }
+    .hero-ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+    .hero-stats { display: flex; gap: 28px; margin-top: 34px; flex-wrap: wrap; }
+    .hero-stats b { display: block; font-size: 1.4rem; }
+    .hero-stats span { font-size: .8rem; color: #9fc7bb; }
+
+    /* Hero illustration */
+    .hero-art { position: relative; min-height: 360px; align-self: end; }
+    .hero-art svg.scene { width: 100%; height: auto; max-width: 520px; margin-left: auto; }
+    .float {
+      position: absolute; background: #fff; color: var(--ink); border-radius: 16px; padding: 12px 14px;
+      box-shadow: var(--shadow); display: flex; align-items: center; gap: 10px; font-size: .8rem;
+      animation: floaty 5s ease-in-out infinite;
+    }
+    .float b { display: block; font-size: .88rem; }
+    .float .ic { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; flex-shrink: 0; }
+    .float-1 { top: 14%; left: 0; }
+    .float-2 { bottom: 26%; right: 0; animation-delay: -2.5s; }
+    @keyframes floaty { 50% { transform: translateY(-8px); } }
+    @media (max-width: 520px) { .float-1 { left: -6px; top: 4%; } .float-2 { right: -6px; } }
+
+    /* Product finder bar */
+    .finder {
+      position: relative; z-index: 2; background: #fff; color: var(--ink); border-radius: 20px;
+      padding: 16px; display: grid; gap: 10px; margin: 0 -8px 24px; box-shadow: var(--shadow);
+    }
+    @media (min-width: 860px) {
+      .finder { grid-template-columns: auto 1fr 1fr auto 1fr auto; align-items: center; margin: -10px 0 32px; padding: 14px 14px 14px 22px; }
+    }
+    .finder label.title { font-weight: 800; font-size: .95rem; }
+    .finder select, .finder input {
+      height: 48px; border: 1.5px solid var(--line); border-radius: 999px; padding: 0 18px; background: #fff; width: 100%; outline: none;
+    }
+    .finder select:focus, .finder input:focus { border-color: var(--mint-dark); }
+    .finder .or { text-align: center; color: var(--muted); font-size: .85rem; }
+
+    /* ---------- Categories ---------- */
+    .cats { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 18px; }
+    .cat { text-align: center; }
+    .cat .circle {
+      aspect-ratio: 1; border-radius: 50%; background: #fff; border: 1px solid var(--line);
+      display: grid; place-items: center; transition: transform .25s, box-shadow .25s, border-color .25s;
+    }
+    .cat .circle svg { width: 58%; }
+    .cat:hover .circle { transform: translateY(-4px); box-shadow: var(--shadow); border-color: var(--mint); }
+    .cat h3 { font-size: .92rem; font-weight: 700; margin-top: 12px; }
+    .cat p { font-size: .75rem; color: var(--muted); }
+
+    /* ---------- Service cards ---------- */
+    .services { display: grid; gap: 20px; }
+    @media (min-width: 860px) { .services { grid-template-columns: 1fr 1fr; } }
+    .service {
+      position: relative; overflow: hidden; border-radius: 24px; padding: 32px; min-height: 250px;
+      display: flex; flex-direction: column; justify-content: space-between; gap: 22px;
+    }
+    .service.lab { background: linear-gradient(135deg, #e6f1ff, #d4e6ff); }
+    .service.doc { background: linear-gradient(135deg, #fff6e2, #ffeccc); }
+    .service .kicker { font-size: .78rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+    .service.lab .kicker { color: #2b63c6; }
+    .service.doc .kicker { color: #b7791f; }
+    .service h3 { font-size: clamp(1.4rem, 2.4vw, 1.85rem); font-weight: 800; letter-spacing: -.02em; margin-top: 8px; max-width: 300px; }
+    .service p { color: var(--ink-soft); margin-top: 6px; max-width: 290px; }
+    .service ul { display: flex; flex-wrap: wrap; gap: 8px; }
+    .service li { background: rgba(255,255,255,.75); border-radius: 999px; padding: 6px 12px; font-size: .78rem; font-weight: 600; }
+    .service .art { position: absolute; right: -10px; bottom: -10px; width: 46%; max-width: 230px; opacity: .95; }
+    @media (max-width: 520px) { .service .art { width: 38%; opacity: .5; } }
+
+    /* ---------- Products ---------- */
+    .tabs { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin-bottom: 22px; }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab {
+      flex-shrink: 0; height: 38px; padding: 0 16px; border-radius: 999px; border: 1.5px solid var(--line);
+      background: #fff; font-size: .85rem; font-weight: 600; color: var(--ink-soft); transition: all .2s;
+    }
+    .tab:hover { border-color: var(--brand); }
+    .tab[aria-selected="true"] { background: var(--brand); border-color: var(--brand); color: #fff; }
+
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    @media (min-width: 720px) { .grid { grid-template-columns: repeat(3, 1fr); gap: 18px; } }
+    @media (min-width: 1040px) { .grid { grid-template-columns: repeat(4, 1fr); } }
+    .card {
+      background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 12px;
+      display: flex; flex-direction: column; transition: transform .25s, box-shadow .25s; animation: fadeIn .4s both;
+    }
+    .card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } }
+    .card .thumb { position: relative; border-radius: 13px; background: var(--bg); aspect-ratio: 1 / .9; display: grid; place-items: center; }
+    .card .thumb svg { width: 62%; height: 80%; }
+    .badge { position: absolute; top: 10px; left: 10px; font-size: .7rem; font-weight: 800; padding: 4px 9px; border-radius: 999px; color: #fff; background: var(--coral); }
+    .badge.new { background: var(--mint-dark); }
+    .wish { position: absolute; top: 8px; right: 8px; width: 34px; height: 34px; border-radius: 50%; background: #fff; display: grid; place-items: center; color: var(--muted); transition: color .2s, transform .2s; }
+    .wish:hover { transform: scale(1.08); }
+    .wish[aria-pressed="true"] { color: var(--coral); }
+    .wish[aria-pressed="true"] svg { fill: currentColor; }
+    .card .meta { font-size: .72rem; color: var(--muted); margin-top: 12px; text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
+    .card h3 { font-size: .95rem; font-weight: 700; margin-top: 4px; line-height: 1.3; min-height: 2.6em; }
+    .rating { font-size: .78rem; color: var(--ink-soft); margin-top: 6px; }
+    .rating .stars { font-size: .8rem; }
+    .price-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .price b { font-size: 1.1rem; }
+    .price s { color: var(--muted); font-size: .8rem; margin-left: 4px; }
+    .add {
+      height: 38px; padding: 0 14px; border-radius: 999px; background: var(--mint-tint); color: var(--brand);
+      font-size: .82rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; transition: background .2s, color .2s;
+    }
+    .add:hover { background: var(--brand); color: #fff; }
+    .add.added { background: var(--mint); color: var(--brand); }
+    .empty { grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--muted); background: #fff; border-radius: var(--radius); border: 1px dashed var(--line); }
+
+    /* ---------- Brand band ---------- */
+    .brand-band {
+      border-radius: 28px; overflow: hidden; display: grid; color: #fff;
+      background: linear-gradient(120deg, var(--brand) 0%, var(--brand-2) 100%);
+    }
+    @media (min-width: 900px) { .brand-band { grid-template-columns: 1fr 1.25fr; } }
+    .brand-band .left { padding: 36px; display: flex; flex-direction: column; justify-content: space-between; gap: 24px; background: radial-gradient(circle at 20% 20%, rgba(55,211,155,.25), transparent 60%); }
+    .brand-band .left h3 { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; letter-spacing: -.02em; }
+    .brand-band .left p { color: #cfe9e1; margin-top: 10px; max-width: 360px; }
+    .brand-band .tag { display: inline-block; background: rgba(255,255,255,.12); border-radius: 999px; padding: 6px 12px; font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+    .brand-band .right { padding: 36px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; align-content: center; }
+    @media (max-width: 560px) { .brand-band .right { grid-template-columns: 1fr 1fr; padding-top: 0; } }
+    .mini { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); border-radius: 18px; padding: 14px; text-align: center; transition: background .2s; }
+    .mini:hover { background: rgba(255,255,255,.14); }
+    .mini .pic { background: #fff; border-radius: 12px; aspect-ratio: 1; display: grid; place-items: center; }
+    .mini .pic svg { width: 60%; height: 80%; }
+    .mini b { display: block; margin-top: 10px; font-size: .9rem; }
+    .mini span { font-size: .78rem; color: #9fc7bb; }
+
+    /* ---------- Why us ---------- */
+    .why { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+    .why-item { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; }
+    .why-item .ic { width: 46px; height: 46px; border-radius: 14px; background: var(--mint-tint); color: var(--brand); display: grid; place-items: center; }
+    .why-item h3 { font-size: 1rem; font-weight: 800; margin-top: 14px; }
+    .why-item p { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+
+    /* ---------- Doctor CTA ---------- */
+    .doctor-cta {
+      border-radius: 24px; background: var(--brand); color: #fff; padding: 28px 32px;
+      display: grid; gap: 22px; align-items: center;
+    }
+    @media (min-width: 900px) { .doctor-cta { grid-template-columns: 1.2fr 1.3fr auto; } }
+    .doctor-cta h2 { font-size: clamp(1.4rem, 2.6vw, 1.9rem); font-weight: 800; letter-spacing: -.02em; }
+    .doctor-cta p { color: #9fc7bb; font-size: .9rem; margin-top: 4px; }
+    .checks { display: grid; gap: 8px; font-size: .9rem; color: #cfe9e1; }
+    @media (min-width: 600px) { .checks { grid-template-columns: 1fr 1fr; } }
+    .checks li { display: flex; align-items: center; gap: 8px; }
+    .checks li::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 0 4px rgba(55,211,155,.2); }
+
+    /* ---------- Footer ---------- */
+    footer { background: #0c211d; color: #9fb8b1; margin-top: 56px; }
+    .foot { display: grid; gap: 32px; padding-block: 48px 32px; grid-template-columns: repeat(2, 1fr); }
+    @media (min-width: 860px) { .foot { grid-template-columns: 1.6fr repeat(3, 1fr); } }
+    .foot .about { grid-column: 1 / -1; }
+    @media (min-width: 860px) { .foot .about { grid-column: auto; } }
+    .foot h4 { color: #fff; font-size: .95rem; margin-bottom: 14px; }
+    .foot li + li { margin-top: 8px; }
+    .foot a:hover { color: var(--mint); }
+    .foot .logo { color: #fff; }
+    .foot .about p { margin-top: 14px; max-width: 320px; font-size: .9rem; }
+    .copyright { border-top: 1px solid rgba(255,255,255,.08); padding-block: 18px; font-size: .8rem; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+    /* ---------- Toast ---------- */
+    .toast {
+      position: fixed; left: 50%; bottom: 24px; z-index: 60; transform: translate(-50%, 150%); opacity: 0;
+      background: var(--ink); color: #fff; padding: 12px 18px; border-radius: 12px; font-size: .9rem;
+      transition: transform .3s, opacity .3s; box-shadow: var(--shadow); max-width: calc(100vw - 32px);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .toast.show { transform: translate(-50%, 0); opacity: 1; }
+    .toast .tick { width: 22px; height: 22px; border-radius: 50%; background: var(--mint); color: var(--brand); display: grid; place-items: center; font-weight: 900; font-size: .75rem; }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <a href="#main" class="sr-only">Skip to content</a>
+
+  <!-- Top strip -->
+  <div class="strip">
+    <div class="wrap">
+      <p>🚚 <b>Free delivery</b> on orders above ₹499 · Delivered within 24 hours</p>
+      <p class="hide-sm">Need help? Call <b>1800-000-0000</b> (demo)</p>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="wrap">
+      <div class="header-row">
+        <a href="#top" class="logo" aria-label="Remedy Lane home">
+          <span class="logo-mark"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16M4 12h16" stroke="#37d39b" stroke-width="4" stroke-linecap="round"/></svg></span>
+          Remedy Lane
+        </a>
+
+        <form class="search" role="search" id="header-search">
+          <label class="sr-only" for="search-cat">Category</label>
+          <select id="search-cat">
+            <option value="all">All Categories</option>
+          </select>
+          <span class="divider"></span>
+          <label class="sr-only" for="search-input">Search</label>
+          <input id="search-input" type="search" placeholder="Search medicines, vitamins, skincare…" />
+          <button type="submit" aria-label="Search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
+        </form>
+
+        <div class="header-right">
+          <div class="location">
+            <span class="pin"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.1-7-11.5A7 7 0 0 1 19 9.5C19 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span>
+            <span>Deliver to<b>Chandigarh</b></span>
+          </div>
+          <button class="icon-btn" id="cart-btn" aria-label="Cart, 0 items">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6"/><circle cx="10" cy="20" r="1.3"/><circle cx="17" cy="20" r="1.3"/></svg>
+            <span class="cart-count" id="cart-count">0</span>
+          </button>
+          <div class="account">
+            <span class="avatar">G</span>
+            <span>Welcome<b>Guest</b></span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="cat-nav" aria-label="Quick links">
+        <a href="#categories">Shop by Category</a>
+        <a href="#best-sellers" data-quick="under">Under ₹500</a>
+        <a href="#best-sellers" data-quick="new"><span class="dot" style="background:var(--mint-dark)"></span>New Arrivals</a>
+        <a href="#best-sellers"><span class="dot" style="background:#2b63c6"></span>Best Selling</a>
+        <a href="#best-sellers" data-quick="offer"><span class="dot" style="background:var(--coral)"></span>Offers</a>
+        <a href="#best-sellers" data-quick="skin">Personal Care</a>
+        <a href="#best-sellers" data-quick="vitamins">Vitamins & Supplements</a>
+        <a href="#services">Lab Tests</a>
+        <a href="#doctor">Consult a Doctor</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- ================= HERO ================= -->
+    <section class="hero" id="top">
+      <div class="wrap">
+        <div class="hero-card">
+          <div class="hero-grid">
+            <div>
+              <div class="trust">
+                <span class="faces" aria-hidden="true">
+                  <span style="background:#ffd9c9">AK</span><span style="background:#c9f0e0">RS</span><span style="background:#dbe6ff">MP</span>
+                </span>
+                <span><span class="stars" aria-hidden="true">★★★★★</span><br />Trusted by 50,000+ families</span>
+              </div>
+              <h1>Healthcare, <em>delivered</em> to your doorstep.</h1>
+              <p class="hero-lead">Order genuine medicines, book lab tests at home and talk to a doctor online — with delivery across Chandigarh, Mohali and Panchkula within 24 hours.</p>
+              <div class="hero-ctas">
+                <a href="#best-sellers" class="btn btn-mint">Order Medicines
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </a>
+                <button type="button" class="btn btn-ghost" id="upload-rx">Upload Prescription</button>
+              </div>
+              <div class="hero-stats">
+                <div><b>10k+</b><span>Products</span></div>
+                <div><b>24 hr</b><span>Delivery</span></div>
+                <div><b>100%</b><span>Genuine medicines</span></div>
+              </div>
+            </div>
+
+            <!-- Illustration: original SVG scene -->
+            <div class="hero-art" aria-hidden="true">
+              <svg class="scene" viewBox="0 0 520 420">
+                <circle cx="300" cy="230" r="180" fill="#1f6b5d" opacity=".55"/>
+                <circle cx="300" cy="230" r="128" fill="#26806f" opacity=".5"/>
+                <!-- Box -->
+                <g transform="translate(150 230)">
+                  <path d="M0 40 L110 0 L220 40 L110 80 Z" fill="#f2c48d"/>
+                  <path d="M0 40 L110 80 L110 190 L0 150 Z" fill="#d99a5b"/>
+                  <path d="M220 40 L110 80 L110 190 L220 150 Z" fill="#e8b073"/>
+                  <path d="M55 20 L165 60 L165 92 L150 86 L150 66 L40 26 Z" fill="#fff" opacity=".55"/>
+                  <rect x="130" y="110" width="66" height="34" rx="6" transform="skewY(-20) translate(0 48)" fill="#fff" opacity=".9"/>
+                </g>
+                <!-- Big bottle -->
+                <g transform="translate(300 60)">
+                  <rect x="22" y="0" width="76" height="34" rx="8" fill="#37d39b"/>
+                  <rect x="10" y="30" width="100" height="170" rx="26" fill="#ffffff"/>
+                  <rect x="10" y="84" width="100" height="70" fill="#123a33"/>
+                  <path d="M60 100v38M41 119h38" stroke="#37d39b" stroke-width="10" stroke-linecap="round"/>
+                  <rect x="22" y="44" width="10" height="34" rx="5" fill="#e3ebe8"/>
+                </g>
+                <!-- Tub -->
+                <g transform="translate(110 150)">
+                  <rect x="0" y="0" width="86" height="22" rx="7" fill="#ff7a59"/>
+                  <rect x="4" y="18" width="78" height="92" rx="14" fill="#fff6e2"/>
+                  <rect x="4" y="46" width="78" height="38" fill="#ffc845"/>
+                  <text x="43" y="70" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="800" font-size="13" fill="#10231f">VIT C</text>
+                </g>
+                <!-- Pills -->
+                <g transform="translate(410 300) rotate(-30)">
+                  <rect width="58" height="24" rx="12" fill="#fff"/><rect width="29" height="24" rx="12" fill="#ff7a59"/><rect x="17" width="12" height="24" fill="#ff7a59"/>
+                </g>
+                <g transform="translate(90 330) rotate(20)">
+                  <rect width="50" height="20" rx="10" fill="#fff"/><rect width="25" height="20" rx="10" fill="#37d39b"/><rect x="14" width="11" height="20" fill="#37d39b"/>
+                </g>
+                <circle cx="460" cy="140" r="10" fill="#ffc845"/>
+                <circle cx="80" cy="250" r="7" fill="#fff" opacity=".7"/>
+              </svg>
+              <div class="float float-1">
+                <span class="ic" style="background:var(--mint-tint);color:var(--brand)">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12l5 5L20 7"/></svg>
+                </span>
+                <span><b>Order delivered</b>Sector 17 · 2 hrs ago</span>
+              </div>
+              <div class="float float-2">
+                <span class="ic" style="background:#fff1ec;color:var(--coral)">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                </span>
+                <span><b>Arriving today</b>Track in real time</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product finder -->
+          <form class="finder" id="finder">
+            <label class="title" for="finder-cat">Find a product</label>
+            <select id="finder-cat" aria-label="Category"><option value="all">All Categories</option></select>
+            <select id="finder-brand" aria-label="Brand"><option value="all">All Brands</option></select>
+            <span class="or">or</span>
+            <input id="finder-sku" type="text" placeholder="Enter product name" aria-label="Product name" />
+            <button type="submit" class="btn btn-dark">Shop Now</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CATEGORIES ================= -->
+    <section id="categories">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <h2>Shop by Category</h2>
+            <p>Everything your family needs, sorted.</p>
+          </div>
+          <a href="#best-sellers" class="link-arrow">Shop all products →</a>
+        </div>
+        <ul class="cats" id="cats"></ul>
+      </div>
+    </section>
+
+    <!-- ================= SERVICES ================= -->
+    <section id="services" style="padding-top:0">
+      <div class="wrap services">
+        <article class="service lab">
+          <div>
+            <p class="kicker">Lab Tests</p>
+            <h3>Book lab tests from home</h3>
+            <p>Certified technicians collect samples at your door. Digital reports in 24–48 hours.</p>
+          </div>
+          <ul><li>Full body checkup</li><li>Thyroid</li><li>Diabetes (HbA1c)</li></ul>
+          <a href="#" class="btn btn-outline" style="align-self:flex-start" data-toast="Lab test booking opens soon (demo)">Browse Tests</a>
+          <svg class="art" viewBox="0 0 200 200" aria-hidden="true">
+            <rect x="70" y="20" width="44" height="140" rx="22" fill="#fff"/>
+            <rect x="70" y="90" width="44" height="70" rx="0" fill="#2b63c6" opacity=".85"/>
+            <rect x="64" y="12" width="56" height="18" rx="6" fill="#2b63c6"/>
+            <rect x="126" y="60" width="34" height="110" rx="17" fill="#fff"/>
+            <rect x="126" y="120" width="34" height="50" fill="#ff7a59" opacity=".85"/>
+            <rect x="121" y="52" width="44" height="14" rx="5" fill="#ff7a59"/>
+          </svg>
+        </article>
+        <article class="service doc" id="doctor">
+          <div>
+            <p class="kicker">Online Consultation</p>
+            <h3>Video consultation from ₹199</h3>
+            <p>Talk to verified doctors in 15 minutes — prescriptions sent straight to your phone.</p>
+          </div>
+          <ul><li>General physician</li><li>Dermatology</li><li>Paediatrics</li></ul>
+          <a href="#" class="btn btn-outline" style="align-self:flex-start" data-toast="Consultations open soon (demo)">Book Consultation</a>
+          <svg class="art" viewBox="0 0 200 200" aria-hidden="true">
+            <rect x="40" y="30" width="140" height="150" rx="20" fill="#fff"/>
+            <rect x="40" y="30" width="140" height="34" rx="20" fill="#b7791f" opacity=".85"/>
+            <circle cx="110" cy="112" r="28" fill="#ffc845"/>
+            <path d="M74 176c4-24 18-36 36-36s32 12 36 36" fill="#ffc845"/>
+            <circle cx="60" cy="47" r="5" fill="#fff"/>
+          </svg>
+        </article>
+      </div>
+    </section>
+
+    <!-- ================= BEST SELLERS ================= -->
+    <section id="best-sellers" style="padding-top:0">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <h2>Best Sellers</h2>
+            <p>Customer favourites with thousands of 5-star reviews.</p>
+          </div>
+          <a href="#best-sellers" class="link-arrow" data-filter-link="all">View all products →</a>
+        </div>
+        <div class="tabs" role="tablist" id="tabs" aria-label="Filter products"></div>
+        <div class="grid" id="products" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- ================= FEATURED BRAND ================= -->
+    <section style="padding-top:0">
+      <div class="wrap">
+        <div class="brand-band">
+          <div class="left">
+            <div>
+              <span class="tag">Featured brand</span>
+              <h3 style="margin-top:14px">Verde Wellness — new arrivals</h3>
+              <p>Clean, science-led formulations for everyday wellness. Multivitamins, plant protein and hydration made simple.</p>
+            </div>
+            <a href="#best-sellers" class="btn btn-mint" style="align-self:flex-start" data-filter-link="vitamins">Shop Verde Wellness</a>
+          </div>
+          <div class="right" id="brand-minis"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= WHY US ================= -->
+    <section style="padding-top:0">
+      <div class="wrap">
+        <div class="section-head"><div><h2>Why families choose us</h2></div></div>
+        <div class="why">
+          <div class="why-item">
+            <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></svg></span>
+            <h3>100% genuine</h3><p>Sourced directly from licensed distributors and manufacturers.</p>
+          </div>
+          <div class="why-item">
+            <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="13" height="10" rx="1"/><path d="M15 10h4l3 3v4h-7"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></span>
+            <h3>24-hour delivery</h3><p>Fast delivery across the Tricity, with live order tracking.</p>
+          </div>
+          <div class="why-item">
+            <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h10M4 17h7"/><circle cx="18" cy="16" r="3"/></svg></span>
+            <h3>Up to 25% off</h3><p>Everyday savings on medicines and wellness essentials.</p>
+          </div>
+          <div class="why-item">
+            <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+            <h3>Pharmacist support</h3><p>Questions about a medicine? Chat with a pharmacist anytime.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= DOCTOR CTA ================= -->
+    <section style="padding-top:0;padding-bottom:0">
+      <div class="wrap">
+        <div class="doctor-cta">
+          <div>
+            <h2>Talk to a doctor in 15 minutes</h2>
+            <p>Instant medical advice from certified healthcare professionals.</p>
+          </div>
+          <ul class="checks">
+            <li>500+ verified doctors</li>
+            <li>Available 24/7</li>
+            <li>Prescriptions provided</li>
+            <li>Follow-up chat included</li>
+          </ul>
+          <a href="#" class="btn btn-mint" data-toast="Consultations open soon (demo)">Consult Now</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="foot">
+        <div class="about">
+          <a href="#top" class="logo">
+            <span class="logo-mark" style="background:#1c5a4f"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16M4 12h16" stroke="#37d39b" stroke-width="4" stroke-linecap="round"/></svg></span>
+            Remedy Lane
+          </a>
+          <p>A concept online pharmacy landing page — designed and built by <a href="https://arshiiiverse.github.io" style="color:#37d39b">Arshdeep Kaur</a>. Remedy Lane is a fictional brand.</p>
+        </div>
+        <div>
+          <h4>Shop</h4>
+          <ul><li><a href="#categories">Categories</a></li><li><a href="#best-sellers">Best Sellers</a></li><li><a href="#best-sellers">Offers</a></li></ul>
+        </div>
+        <div>
+          <h4>Services</h4>
+          <ul><li><a href="#services">Lab Tests</a></li><li><a href="#doctor">Doctor Consultation</a></li><li><a href="#top">Upload Prescription</a></li></ul>
+        </div>
+        <div>
+          <h4>Project</h4>
+          <ul><li><a href="https://github.com/arshiiiverse">GitHub</a></li><li><a href="https://arshiiiverse.github.io">Portfolio</a></li><li><a href="https://www.linkedin.com/in/arshdeep-kaur-411302427">LinkedIn</a></li></ul>
+        </div>
+      </div>
+      <div class="copyright">
+        <p>© <span id="year"></span> Remedy Lane (concept). Not a real pharmacy — for portfolio purposes only.</p>
+        <p>Designed &amp; developed by Arshdeep Kaur</p>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"><span class="tick">✓</span><span id="toast-text"></span></div>
+
+  <script>
+    (function () {
+      'use strict';
+      const $ = (s, c = document) => c.querySelector(s);
+      const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
+
+      /* ---------- Data ---------- */
+      const CATEGORIES = [
+        { id: 'skin',      name: 'Personal Care',          count: '1,240 items', shape: 'pump',   c: ['#e3ebe8', '#dbe6ff', '#2b63c6'] },
+        { id: 'vitamins',  name: 'Vitamins & Supplements', count: '860 items',   shape: 'bottle', c: ['#ffc845', '#fff', '#10231f'] },
+        { id: 'fitness',   name: 'Fitness & Nutrition',    count: '420 items',   shape: 'tub',    c: ['#10231f', '#2f3b39', '#37d39b'] },
+        { id: 'diabetes',  name: 'Diabetes Care',          count: '310 items',   shape: 'device', c: ['#2b63c6', '#e6f1ff', '#2b63c6'] },
+        { id: 'firstaid',  name: 'First Aid',              count: '190 items',   shape: 'kit',    c: ['#ff7a59', '#fff', '#ff7a59'] },
+        { id: 'ayurveda',  name: 'Ayurveda',               count: '540 items',   shape: 'bottle', c: ['#6b8e23', '#f1f6e4', '#3f5a10'] },
+        { id: 'baby',      name: 'Baby Care',              count: '280 items',   shape: 'tube',   c: ['#ffb4c6', '#fff', '#c2416a'] },
+        { id: 'digestive', name: 'Digestive Health',       count: '230 items',   shape: 'bottle', c: ['#1c5a4f', '#e6f8f0', '#123a33'] }
+      ];
+
+      const PRODUCTS = [
+        { name: 'Omega-3 Fish Oil 1000 mg',     cat: 'vitamins', brand: 'Verde Wellness', price: 549, mrp: 699, rating: 4.8, reviews: 1234, badge: 'new',  shape: 'bottle', c: ['#ff9f43', '#fff', '#c45a00'], label: 'OMEGA 3' },
+        { name: 'Vitamin C 1000 mg Tablets',    cat: 'vitamins', brand: 'Verde Wellness', price: 299, mrp: 399, rating: 4.7, reviews: 2210, badge: 'off',  shape: 'tub',    c: ['#ffc845', '#fff6e2', '#10231f'], label: 'VIT C' },
+        { name: 'Whey Protein Isolate 1 kg',    cat: 'fitness',  brand: 'PeakForm',       price: 2899, mrp: 3499, rating: 4.6, reviews: 980, badge: 'off', shape: 'tub',    c: ['#10231f', '#2f3b39', '#37d39b'], label: 'WHEY' },
+        { name: 'Sunscreen SPF 50 PA++++',      cat: 'skin',     brand: 'DermaLeaf',      price: 449, mrp: 525, rating: 4.7, reviews: 1650, badge: 'off',  shape: 'tube',   c: ['#ff7a59', '#fff', '#ff7a59'], label: 'SPF 50' },
+        { name: 'Gentle Baby Lotion 200 ml',    cat: 'baby',     brand: 'Tiny Bloom',     price: 245, mrp: 289, rating: 4.8, reviews: 760,  badge: 'off',  shape: 'pump',   c: ['#ffb4c6', '#fff', '#c2416a'], label: 'BABY' },
+        { name: 'Glucometer Starter Kit',       cat: 'diabetes', brand: 'AccuLife',       price: 999, mrp: 1499, rating: 4.5, reviews: 540, badge: 'off',  shape: 'device', c: ['#2b63c6', '#e6f1ff', '#2b63c6'], label: '' },
+        { name: 'Ashwagandha 500 mg Capsules',  cat: 'ayurveda', brand: 'Vedic Roots',    price: 349, mrp: 399, rating: 4.6, reviews: 1890, badge: 'new',  shape: 'bottle', c: ['#6b8e23', '#f1f6e4', '#3f5a10'], label: 'ASHWA' },
+        { name: 'First Aid Kit — 42 pieces',    cat: 'firstaid', brand: 'SafeHands',      price: 499, mrp: 649, rating: 4.7, reviews: 430,  badge: 'off',  shape: 'kit',    c: ['#ff7a59', '#fff', '#ff7a59'], label: '' },
+        { name: 'Probiotic Gut Health 30 caps', cat: 'digestive',brand: 'Verde Wellness', price: 599, mrp: 749, rating: 4.6, reviews: 670,  badge: 'off',  shape: 'bottle', c: ['#1c5a4f', '#e6f8f0', '#123a33'], label: 'PROBIO' },
+        { name: 'Collagen Peptides Type I',     cat: 'vitamins', brand: 'DermaLeaf',      price: 1199, mrp: 1399, rating: 4.5, reviews: 820, badge: 'new', shape: 'tub',    c: ['#f5b5c8', '#fff', '#a3355a'], label: 'COLLAGEN' },
+        { name: 'Foaming Face Cleanser',        cat: 'skin',     brand: 'DermaLeaf',      price: 375, mrp: 425, rating: 4.4, reviews: 1120, badge: 'off',  shape: 'pump',   c: ['#37d39b', '#fff', '#1c5a4f'], label: 'CLEANSE' },
+        { name: 'Diaper Rash Cream 50 g',       cat: 'baby',     brand: 'Tiny Bloom',     price: 189, mrp: 220, rating: 4.8, reviews: 990,  badge: 'off',  shape: 'tube',   c: ['#7cc4ff', '#fff', '#2b63c6'], label: 'RASH' }
+      ];
+
+      const TABS = [
+        { id: 'all', name: 'All Products' }, { id: 'vitamins', name: 'Vitamins & Supplements' },
+        { id: 'skin', name: 'Skin & Hair' }, { id: 'baby', name: 'Baby Care' },
+        { id: 'ayurveda', name: 'Ayurveda' }, { id: 'diabetes', name: 'Diabetes Care' },
+        { id: 'fitness', name: 'Fitness' }, { id: 'under', name: 'Under ₹500' },
+        { id: 'new', name: 'New Arrivals' }
+      ];
+
+      /* ---------- Product art (original SVG, no photos needed) ---------- */
+      function art(shape, c, label) {
+        const [main, body, ink] = c;
+        const txt = (y, s = 10) => label ? `<text x="60" y="${y}" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-weight="800" font-size="${s}" fill="${ink}">${label}</text>` : '';
+        switch (shape) {
+          case 'tub': return `<svg viewBox="0 0 120 140" aria-hidden="true"><rect x="18" y="20" width="84" height="22" rx="7" fill="${main}"/><rect x="22" y="38" width="76" height="92" rx="14" fill="${body}" stroke="#e3ebe8"/><rect x="22" y="62" width="76" height="40" fill="${main}" opacity=".9"/>${txt(87, label.length > 6 ? 9 : 12).replace(`fill="${ink}"`, `fill="${body === '#fff' || body === '#fff6e2' ? ink : '#fff'}"`)}</svg>`;
+          case 'tube': return `<svg viewBox="0 0 120 140" aria-hidden="true"><path d="M34 14h52l-6 96H40z" fill="${body}" stroke="#e3ebe8"/><rect x="40" y="108" width="40" height="22" rx="5" fill="${main}"/><rect x="36" y="10" width="48" height="8" rx="3" fill="${main}"/><rect x="38" y="44" width="44" height="30" rx="4" fill="${main}" opacity=".18"/>${txt(63, 10)}</svg>`;
+          case 'pump': return `<svg viewBox="0 0 120 140" aria-hidden="true"><rect x="54" y="6" width="12" height="18" fill="${main}"/><path d="M50 8h34v8H50z" fill="${main}"/><rect x="48" y="22" width="24" height="12" rx="3" fill="${main}"/><rect x="30" y="32" width="60" height="98" rx="18" fill="${body}" stroke="#e3ebe8"/><rect x="30" y="62" width="60" height="36" fill="${main}" opacity=".9"/>${txt(84, 10).replace(`fill="${ink}"`, 'fill="#fff"')}</svg>`;
+          case 'device': return `<svg viewBox="0 0 120 140" aria-hidden="true"><rect x="28" y="12" width="64" height="116" rx="18" fill="#fff" stroke="#e3ebe8" stroke-width="2"/><rect x="38" y="26" width="44" height="40" rx="8" fill="${body}"/><text x="60" y="54" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-weight="800" font-size="18" fill="${ink}">98</text><circle cx="60" cy="92" r="12" fill="${main}"/><rect x="50" y="112" width="20" height="5" rx="2.5" fill="#e3ebe8"/></svg>`;
+          case 'kit': return `<svg viewBox="0 0 120 140" aria-hidden="true"><rect x="44" y="26" width="32" height="16" rx="5" fill="none" stroke="${main}" stroke-width="5"/><rect x="14" y="40" width="92" height="80" rx="14" fill="${main}"/><rect x="14" y="40" width="92" height="14" rx="7" fill="#000" opacity=".08"/><path d="M60 64v36M42 82h36" stroke="#fff" stroke-width="10" stroke-linecap="round"/></svg>`;
+          default: return `<svg viewBox="0 0 120 140" aria-hidden="true"><rect x="38" y="8" width="44" height="20" rx="5" fill="${main}"/><rect x="28" y="24" width="64" height="106" rx="16" fill="${body}" stroke="#e3ebe8"/><rect x="28" y="56" width="64" height="44" fill="${main}" opacity=".95"/>${txt(82, label.length > 6 ? 9 : 11).replace(`fill="${ink}"`, 'fill="#fff"')}</svg>`;
+        }
+      }
+
+      const rupee = n => '₹' + n.toLocaleString('en-IN');
+      const discount = p => Math.round((1 - p.price / p.mrp) * 100);
+
+      /* ---------- Render categories ---------- */
+      $('#cats').innerHTML = CATEGORIES.map(c => `
+        <li class="cat">
+          <a href="#best-sellers" data-filter-link="${c.id}">
+            <span class="circle">${art(c.shape, c.c, '')}</span>
+            <h3>${c.name}</h3>
+            <p>${c.count}</p>
+          </a>
+        </li>`).join('');
+
+      /* ---------- Selects ---------- */
+      const catOptions = CATEGORIES.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+      $('#search-cat').insertAdjacentHTML('beforeend', catOptions);
+      $('#finder-cat').insertAdjacentHTML('beforeend', catOptions);
+      [...new Set(PRODUCTS.map(p => p.brand))].sort()
+        .forEach(b => $('#finder-brand').insertAdjacentHTML('beforeend', `<option>${b}</option>`));
+
+      /* ---------- Featured brand minis ---------- */
+      $('#brand-minis').innerHTML = PRODUCTS.filter(p => p.brand === 'Verde Wellness').slice(0, 3).map(p => `
+        <div class="mini">
+          <div class="pic">${art(p.shape, p.c, p.label)}</div>
+          <b>${p.name.split(' ').slice(0, 2).join(' ')}</b>
+          <span>from ${rupee(p.price)}</span>
+        </div>`).join('');
+
+      /* ---------- Products + filtering ---------- */
+      const state = { tab: 'all', query: '', brand: 'all' };
+      const wished = new Set();
+
+      $('#tabs').innerHTML = TABS.map(t =>
+        `<button class="tab" role="tab" data-tab="${t.id}" aria-selected="${t.id === 'all'}">${t.name}</button>`).join('');
+
+      function matches(p) {
+        const t = state.tab;
+        const okTab = t === 'all' || p.cat === t || (t === 'under' && p.price < 500) ||
+                      (t === 'new' && p.badge === 'new') || (t === 'offer' && discount(p) >= 15);
+        const okBrand = state.brand === 'all' || p.brand === state.brand;
+        const q = state.query.trim().toLowerCase();
+        const okQuery = !q || (p.name + ' ' + p.brand + ' ' + p.cat).toLowerCase().includes(q);
+        return okTab && okBrand && okQuery;
+      }
+
+      function renderProducts() {
+        const list = PRODUCTS.map((p, i) => ({ ...p, i })).filter(matches);
+        $('#products').innerHTML = list.length ? list.map((p, n) => `
+          <article class="card" style="animation-delay:${n * 40}ms">
+            <div class="thumb">
+              ${p.badge === 'new' ? '<span class="badge new">New</span>' : `<span class="badge">-${discount(p)}%</span>`}
+              <button class="wish" data-wish="${p.i}" aria-pressed="${wished.has(p.i)}" aria-label="Save ${p.name} to wishlist">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+              </button>
+              ${art(p.shape, p.c, p.label)}
+            </div>
+            <p class="meta">${p.brand}</p>
+            <h3>${p.name}</h3>
+            <p class="rating"><span class="stars" aria-hidden="true">★</span> ${p.rating} <span style="color:var(--muted)">(${p.reviews.toLocaleString('en-IN')} reviews)</span></p>
+            <div class="price-row">
+              <p class="price"><b>${rupee(p.price)}</b><s>${rupee(p.mrp)}</s></p>
+              <button class="add" data-add="${p.i}">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M12 5v14M5 12h14"/></svg>Add
+              </button>
+            </div>
+          </article>`).join('')
+          : `<p class="empty">No products match your search. <button class="link-arrow" data-reset>Clear filters</button></p>`;
+      }
+
+      function setTab(id) {
+        state.tab = id;
+        $$('.tab').forEach(t => t.setAttribute('aria-selected', String(t.dataset.tab === id)));
+        renderProducts();
+      }
+
+      $('#tabs').addEventListener('click', e => {
+        const t = e.target.closest('.tab');
+        if (!t) return;
+        state.query = ''; state.brand = 'all';
+        setTab(t.dataset.tab);
+      });
+
+      // Any link that jumps to products with a preset filter
+      document.addEventListener('click', e => {
+        const link = e.target.closest('[data-filter-link], [data-quick]');
+        if (!link) return;
+        const id = link.dataset.filterLink || link.dataset.quick;
+        state.query = ''; state.brand = 'all';
+        setTab(TABS.some(t => t.id === id) ? id : (id === 'offer' ? 'offer' : 'all'));
+        if (id === 'offer') $$('.tab').forEach(t => t.setAttribute('aria-selected', 'false'));
+      });
+
+      /* ---------- Cart + wishlist ---------- */
+      let cart = 0;
+      const cartCount = $('#cart-count');
+      $('#products').addEventListener('click', e => {
+        const add = e.target.closest('[data-add]');
+        const wish = e.target.closest('[data-wish]');
+        const reset = e.target.closest('[data-reset]');
+        if (add) {
+          cart++;
+          cartCount.textContent = cart;
+          cartCount.classList.add('show');
+          cartCount.classList.remove('bump'); void cartCount.offsetWidth; cartCount.classList.add('bump');
+          $('#cart-btn').setAttribute('aria-label', `Cart, ${cart} item${cart > 1 ? 's' : ''}`);
+          add.classList.add('added');
+          add.lastChild.textContent = 'Added';
+          setTimeout(() => { add.classList.remove('added'); add.lastChild.textContent = 'Add'; }, 1400);
+          toast(`${PRODUCTS[add.dataset.add].name} added to cart`);
+        }
+        if (wish) {
+          const i = Number(wish.dataset.wish);
+          wished.has(i) ? wished.delete(i) : wished.add(i);
+          wish.setAttribute('aria-pressed', String(wished.has(i)));
+          toast(wished.has(i) ? 'Saved to wishlist' : 'Removed from wishlist');
+        }
+        if (reset) { state.query = ''; state.brand = 'all'; setTab('all'); }
+      });
+
+      $('#cart-btn').addEventListener('click', () =>
+        toast(cart ? `You have ${cart} item${cart > 1 ? 's' : ''} in your cart (demo)` : 'Your cart is empty'));
+
+      /* ---------- Search + finder ---------- */
+      function runSearch(query, cat, brand) {
+        state.query = query || '';
+        state.brand = brand || 'all';
+        setTab(cat || 'all');
+        $('#best-sellers').scrollIntoView({ behavior: 'smooth' });
+      }
+      $('#header-search').addEventListener('submit', e => {
+        e.preventDefault();
+        runSearch($('#search-input').value, $('#search-cat').value);
+      });
+      $('#finder').addEventListener('submit', e => {
+        e.preventDefault();
+        runSearch($('#finder-sku').value, $('#finder-cat').value, $('#finder-brand').value);
+      });
+
+      /* ---------- Misc ---------- */
+      const toastEl = $('#toast');
+      let toastTimer;
+      function toast(msg) {
+        $('#toast-text').textContent = msg;
+        toastEl.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2400);
+      }
+      $$('[data-toast]').forEach(el => el.addEventListener('click', e => { e.preventDefault(); toast(el.dataset.toast); }));
+      $('#upload-rx').addEventListener('click', () => toast('Prescription upload opens soon (demo)'));
+      $('#year').textContent = new Date().getFullYear();
+
+      renderProducts();
+    })();
+  </script>
+</body>
+</html>
