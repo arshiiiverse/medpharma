@@ -45,8 +45,7 @@
       ['catalog.html?tag=under', 'Under ₹500', ''],
       ['catalog.html?tag=new', 'New Arrivals', 'var(--mint-dark)'],
       ['catalog.html?sort=popular', 'Best Selling', 'var(--blue)'],
-      ['catalog.html?tag=offer', 'Offers 20%+', 'var(--coral)'],
-      ...CATEGORIES.map(c => [`catalog.html?cat=${c.id}`, c.name, ''])
+      ['catalog.html?tag=offer', 'Offers 20%+', 'var(--coral)']
     ];
     const here = location.pathname.split('/').pop() + location.search;
     return `
@@ -90,11 +89,24 @@
               <button type="submit" aria-label="Search">${ICON.search}</button>
             </form>
           </div>
-          <nav class="cat-nav" aria-label="Shop">
-            ${nav.map(([href, label, dot]) => `<a href="${href}" ${href === here ? 'aria-current="page"' : ''}>${dot ? `<span class="dot" style="background:${dot}"></span>` : ''}${label}</a>`).join('')}
-            <a href="lab-tests.html" ${here === 'lab-tests.html' ? 'aria-current="page"' : ''}>Lab Tests</a>
-            <a href="doctors.html" ${here === 'doctors.html' ? 'aria-current="page"' : ''}>Consult a Doctor</a>
-          </nav>
+          <div class="nav-row">
+            <div class="cat-menu">
+              <button type="button" class="cat-menu-btn" id="cat-menu-btn" aria-expanded="false" aria-controls="cat-menu-list">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                Categories
+                <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
+              <ul class="cat-menu-list" id="cat-menu-list" hidden>
+                ${CATEGORIES.map(c => `<li><a href="catalog.html?cat=${c.id}" ${here === 'catalog.html?cat=' + c.id ? 'aria-current="page"' : ''}><img src="${c.img}" alt="" width="36" height="36" loading="lazy" /><span>${c.name}<small>${PRODUCTS.filter(p => p.cat === c.id).length} products</small></span></a></li>`).join('')}
+                <li class="all"><a href="catalog.html">View all products →</a></li>
+              </ul>
+            </div>
+            <nav class="cat-nav" aria-label="Shop">
+              ${nav.map(([href, label, dot]) => `<a href="${href}" ${href === here ? 'aria-current="page"' : ''}>${dot ? `<span class="dot" style="background:${dot}"></span>` : ''}${label}</a>`).join('')}
+              <a href="lab-tests.html" ${here === 'lab-tests.html' ? 'aria-current="page"' : ''}>🧪 Lab Tests</a>
+              <a href="doctors.html" ${here === 'doctors.html' ? 'aria-current="page"' : ''}>🩺 Consult a Doctor</a>
+            </nav>
+          </div>
         </div>
       </header>`;
   }
@@ -511,6 +523,20 @@
     if ('close' in d) closePanel();
     if (d.open) { e.preventDefault(); openPanel(d.open, { test: d.test, spec: d.spec, doctor: d.doctor }); }
   });
+
+  // Categories dropdown
+  const menuBtn = $('#cat-menu-btn'), menuList = $('#cat-menu-list');
+  function setMenu(open) { menuList.hidden = !open; menuBtn.setAttribute('aria-expanded', String(open)); }
+  menuBtn.addEventListener('click', () => setMenu(menuList.hidden));
+  document.addEventListener('click', e => { if (!e.target.closest('.cat-menu')) setMenu(false); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !menuList.hidden) { setMenu(false); menuBtn.focus(); } });
+
+  // Fade the edge of the quick-links row while there is more to scroll
+  const navEl = $('.cat-nav');
+  const fade = () => navEl.classList.toggle('more', navEl.scrollLeft + navEl.clientWidth < navEl.scrollWidth - 4);
+  navEl.addEventListener('scroll', fade, { passive: true });
+  window.addEventListener('resize', fade);
+  fade();
 
   // Mobile search toggle + city sync
   $('#mobile-search-btn').addEventListener('click', () => {

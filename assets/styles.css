@@ -119,7 +119,22 @@ section { padding-block: 56px; scroll-margin-top: 130px; }
 @media (min-width: 900px) { .mobile-search { display: none !important; } }
 @media (max-width: 380px) { .logo { font-size: 1.1rem; } .logo img { width: 34px; height: 34px; } .header-right { gap: 6px; } .icon-btn { width: 40px; height: 40px; } }
 
-.cat-nav { display: flex; gap: 8px; overflow-x: auto; padding-block: 10px 14px; scrollbar-width: none; }
+.nav-row { display: flex; align-items: center; gap: 8px; padding-block: 10px 14px; }
+.cat-nav { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; min-width: 0; flex: 1; }
+.cat-nav.more { -webkit-mask-image: linear-gradient(to right, #000 85%, transparent); mask-image: linear-gradient(to right, #000 85%, transparent); }
+.cat-menu { position: relative; flex-shrink: 0; }
+.cat-menu-btn { height: 38px; padding: 0 14px; border-radius: 999px; background: var(--brand); color: #fff; display: inline-flex; align-items: center; gap: 8px; font-size: .85rem; font-weight: 700; }
+.cat-menu-btn:hover { background: var(--brand-2); }
+.cat-menu-btn .chev { transition: transform .2s; }
+.cat-menu-btn[aria-expanded="true"] .chev { transform: rotate(180deg); }
+.cat-menu-list { position: absolute; top: calc(100% + 8px); left: 0; z-index: 50; width: 300px; max-width: calc(100vw - 40px); background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 8px; box-shadow: 0 24px 50px -20px rgba(16,35,31,.35); animation: fadeIn .15s both; }
+.cat-menu-list a { display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: 10px; font-weight: 600; font-size: .9rem; }
+.cat-menu-list a:hover, .cat-menu-list a[aria-current="page"] { background: var(--mint-tint); }
+.cat-menu-list img { width: 36px; height: 36px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
+.cat-menu-list small { display: block; font-size: .75rem; color: var(--muted); font-weight: 500; }
+.cat-menu-list .all a { justify-content: center; color: var(--brand-2); border-top: 1px solid var(--line); border-radius: 0 0 10px 10px; margin-top: 4px; padding-top: 12px; }
+@media (max-width: 1220px) { .cat-nav a[href="catalog.html"] { display: none; } }   /* "View all" lives in the Categories menu */
+@media (max-width: 1320px) { .cat-nav { gap: 6px; } .cat-nav a, .cat-nav button { padding: 0 12px; font-size: .82rem; } .cat-menu-btn { padding: 0 12px; } }
 .cat-nav::-webkit-scrollbar { display: none; }
 .cat-nav a, .cat-nav button {
   flex-shrink: 0; height: 38px; padding: 0 16px; border-radius: 999px; background: var(--bg);
