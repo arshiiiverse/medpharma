@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 64" role="img" aria-label="Medpharma">
+  <g transform="translate(4 8)">
+    <rect width="48" height="48" rx="14" fill="#123a33"/>
+    <g transform="rotate(-45 24 25)">
+      <rect x="10" y="18" width="28" height="14" rx="7" fill="#ffffff"/>
+      <path d="M17 18h7v14h-7a7 7 0 0 1 0-14z" fill="#37d39b"/>
+      <path d="M24 18v14" stroke="#123a33" stroke-width="1.6"/>
+    </g>
+    <path d="M36 8.5v7M32.5 12h7" stroke="#37d39b" stroke-width="2.6" stroke-linecap="round"/>
+  </g>
+  <text x="64" y="42" font-family="Plus Jakarta Sans, Segoe UI, Arial, sans-serif" font-size="30" font-weight="800" letter-spacing="-1" fill="#10231f">Med<tspan fill="#1fb07d">pharma</tspan></text>
+</svg>

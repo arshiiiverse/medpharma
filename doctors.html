@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Medpharma — doctors. Concept project by Arshdeep Kaur. Doctor profiles are fictional. -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Consult a Doctor Online — Medpharma</title>
+  <meta name="description" content="Video consultations with verified general physicians, dermatologists, paediatricians, gynaecologists, orthopaedics and ENT specialists from ₹199." />
+  <meta name="theme-color" content="#123a33" />
+  <link rel="canonical" href="https://arshiiiverse.github.io/medpharma/doctors.html" />
+  <link rel="icon" href="assets/logo-mark.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+
+<body data-page="doctors">
+  <div id="mp-header"></div>
+
+  <main id="main" class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a><span>/</span><span aria-current="page">Consult a Doctor</span></nav>
+
+    <div class="page-hero">
+      <div>
+        <h1>See a doctor in 15 minutes — from home.</h1>
+        <p>Private video consultations with verified specialists. Get advice, prescriptions and follow-ups without the waiting room.</p>
+        <div class="pills"><span>🩺 Verified doctors</span><span>💬 Free follow-up chat</span><span>📄 Digital prescription</span></div>
+        <div class="hero-ctas"><button type="button" class="btn btn-mint" data-open="consult">Book first available doctor</button></div>
+      </div>
+      <div class="art"><img src="images/consult.jpg" alt="Doctor in consultation with a patient" width="720" height="480" /></div>
+    </div>
+
+    <section class="inner">
+      <div class="section-head">
+        <div><h2>Our doctors</h2><p id="doc-count"></p></div>
+        <form class="cat-search" id="doc-search" role="search" style="max-width:300px">
+          <label class="sr-only" for="doc-q">Search doctors</label>
+          <input id="doc-q" type="search" placeholder="Search by name or language…" autocomplete="off" />
+        </form>
+      </div>
+      <div class="tabs" role="tablist" id="spec-tabs" aria-label="Filter by speciality"></div>
+      <div class="docs" id="docs"></div>
+    </section>
+
+    <section class="inner">
+      <p class="note" style="text-align:left">Doctor profiles on this demo site are fictional and for illustration only.</p>
+    </section>
+  </main>
+
+  <div id="mp-footer"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/app.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      const { DOCTORS, SPECS, rupee, esc } = window.MP;
+      const $ = s => document.querySelector(s);
+      let spec = new URLSearchParams(location.search).get('spec') || '';
+      if (!SPECS.some(s => s.id === spec)) spec = '';
+      const initials = n => n.replace('Dr. ', '').split(' ').map(w => w[0]).join('').slice(0, 2);
+
+      $('#spec-tabs').innerHTML = [{ id: '', name: 'All specialities' }, ...SPECS].map(s => `<button class="tab" role="tab" data-spec-tab="${s.id}">${s.name}</button>`).join('');
+
+      function render() {
+        const q = $('#doc-q').value.trim().toLowerCase();
+        const list = DOCTORS.filter(d => (!spec || d.spec === spec) && (!q || (d.name + ' ' + d.langs + ' ' + d.qual).toLowerCase().includes(q)));
+        document.querySelectorAll('#spec-tabs .tab').forEach(t => t.setAttribute('aria-selected', String(t.dataset.specTab === spec)));
+        $('#doc-count').textContent = `${list.length} doctor${list.length === 1 ? '' : 's'} available today`;
+        $('#docs').innerHTML = list.length ? list.map((d, n) => {
+          const s = SPECS.find(x => x.id === d.spec);
+          return `
+          <article class="doc-card" style="animation-delay:${n * 40}ms">
+            <div class="doc-top">
+              <span class="avatar-lg" style="background:${d.color}" aria-hidden="true">${initials(d.name)}</span>
+              <div>
+                <h3>${esc(d.name)}</h3>
+                <p class="spec">${s.name}</p>
+                <p class="qual">${esc(d.qual)}</p>
+              </div>
+            </div>
+            <div class="doc-meta">
+              <div><b>${d.exp} yrs</b>Experience</div>
+              <div><b>★ ${d.rating}</b>Rating</div>
+              <div><b>${(d.consults / 1000).toFixed(1)}k</b>Consults</div>
+            </div>
+            <p class="langs">🗣 ${esc(d.langs)}</p>
+            <div class="foot-row">
+              <p class="price"><b>${rupee(s.fee)}</b> <span style="color:var(--muted);font-size:.8rem">per consult</span></p>
+              <button type="button" class="btn btn-dark btn-sm" data-open="consult" data-doctor="${d.id}">Book video consult</button>
+            </div>
+          </article>`;
+        }).join('') : '<p class="empty"><b>No doctors found</b>Try a different speciality or search.</p>';
+      }
+
+      $('#spec-tabs').addEventListener('click', e => {
+        const b = e.target.closest('.tab'); if (!b) return;
+        spec = b.dataset.specTab;
+        history.replaceState(null, '', 'doctors.html' + (spec ? '?spec=' + spec : ''));
+        render();
+      });
+      $('#doc-q').addEventListener('input', render);
+      $('#doc-search').addEventListener('submit', e => { e.preventDefault(); render(); });
+      render();
+    })();
+  </script>
+</body>
+</html>

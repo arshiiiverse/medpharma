@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Medpharma — product page. Concept project by Arshdeep Kaur. -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product — Medpharma</title>
+  <meta name="description" content="Product details, price, usage and delivery information at Medpharma." />
+  <meta name="theme-color" content="#123a33" />
+  <link rel="icon" href="assets/logo-mark.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+
+<body data-page="product">
+  <div id="mp-header"></div>
+
+  <main id="main" class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb" id="crumbs"></nav>
+    <div id="pdp-root" style="margin-top:20px"></div>
+
+    <section id="related-wrap" style="padding-top:16px" hidden>
+      <div class="section-head"><div><h2>You may also like</h2><p id="related-sub"></p></div><a class="link-arrow" id="related-all" href="catalog.html">See all →</a></div>
+      <div class="grid cols-4" id="related"></div>
+    </section>
+  </main>
+
+  <div id="mp-footer"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/app.js"></script>
+  <script>
+    /* ---------- Product page ---------- */
+    (function () {
+      'use strict';
+      const { PRODUCTS, byId, catById, cardHTML, rupee, discount, esc, wishButton } = window.MP;
+      const $ = s => document.querySelector(s);
+      const id = +new URLSearchParams(location.search).get('id');
+      const p = byId(id);
+
+      if (!p) {
+        $('#crumbs').innerHTML = '<a href="index.html">Home</a><span>/</span><a href="catalog.html">Shop</a>';
+        $('#pdp-root').innerHTML = `<div class="not-found"><h1>Product not found</h1><p>The product you're looking for may have been removed or the link is incorrect.</p><a class="btn btn-dark" href="catalog.html">Browse all products</a></div>`;
+        document.title = 'Product not found — Medpharma';
+        return;
+      }
+
+      const cat = catById(p.cat);
+      document.title = `${p.name} (${p.pack}) — Buy Online at Medpharma`;
+      document.querySelector('meta[name="description"]').content = `${p.name} by ${p.brand} — ${p.desc} ${rupee(p.price)}, delivered in 24 hours.`;
+      const canon = document.createElement('link');
+      canon.rel = 'canonical'; canon.href = `https://arshiiiverse.github.io/medpharma/product.html?id=${p.id}`;
+      document.head.appendChild(canon);
+
+      // Structured data for search engines
+      const ld = document.createElement('script');
+      ld.type = 'application/ld+json';
+      ld.textContent = JSON.stringify({
+        '@context': 'https://schema.org', '@type': 'Product', name: p.name, brand: { '@type': 'Brand', name: p.brand },
+        image: new URL(p.img, location.href).href, description: p.desc,
+        aggregateRating: { '@type': 'AggregateRating', ratingValue: p.rating, reviewCount: p.reviews },
+        offers: { '@type': 'Offer', priceCurrency: 'INR', price: p.price, availability: 'https://schema.org/InStock' }
+      });
+      document.head.appendChild(ld);
+
+      $('#crumbs').innerHTML = `<a href="index.html">Home</a><span>/</span><a href="catalog.html">Shop</a><span>/</span><a href="catalog.html?cat=${cat.id}">${cat.name}</a><span>/</span><span aria-current="page">${esc(p.name)}</span>`;
+
+      let qty = 1;
+      const eta = () => new Date(Date.now() + 24 * 3600 * 1000).toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' });
+
+      $('#pdp-root').innerHTML = `
+        <div class="pdp">
+          <div class="pdp-media">
+            ${p.isNew ? '<span class="badge new">New</span>' : `<span class="badge">-${discount(p)}%</span>`}
+            ${wishButton(p)}
+            <img src="${p.img}" alt="${esc(p.name)}" width="560" height="373" />
+          </div>
+          <div>
+            <a class="pdp-brand" href="catalog.html?brand=${encodeURIComponent(p.brand)}">${esc(p.brand)}</a>
+            <h1>${esc(p.name)}</h1>
+            <p class="pack">${esc(p.pack)} · <a href="catalog.html?cat=${cat.id}" class="link-arrow" style="font-weight:600">${cat.name}</a></p>
+            <p class="rating"><span class="stars" aria-hidden="true">${'★'.repeat(Math.round(p.rating))}${'☆'.repeat(5 - Math.round(p.rating))}</span> <b>${p.rating}</b> <span style="color:var(--muted)">· ${p.reviews.toLocaleString('en-IN')} ratings · ${p.sold.toLocaleString('en-IN')}+ bought this month</span></p>
+
+            <div class="pdp-price">
+              <b>${rupee(p.price)}</b><s>MRP ${rupee(p.mrp)}</s><span class="off">${discount(p)}% OFF</span>
+              <small>Inclusive of all taxes</small>
+            </div>
+
+            ${p.rx ? `<div class="rx-note">℞ <b>Prescription required.</b> You can add this to your cart now — our pharmacist will verify your prescription before dispatch. <button type="button" data-open="rx">Upload prescription</button></div>` : ''}
+
+            <div class="buy">
+              <div class="qty-lg" aria-label="Quantity">
+                <button type="button" id="q-dec" aria-label="Decrease quantity">−</button>
+                <span id="q-val" aria-live="polite">1</span>
+                <button type="button" id="q-inc" aria-label="Increase quantity">+</button>
+              </div>
+              <button type="button" class="btn btn-dark" id="add-btn">Add to cart</button>
+              <button type="button" class="btn btn-mint" id="buy-btn">Buy now</button>
+            </div>
+            <p id="in-cart" style="margin-top:10px;font-size:.88rem;color:var(--mint-dark);font-weight:600"></p>
+
+            <div class="deliver">
+              <h3>Check delivery</h3>
+              <form id="pin-form">
+                <label class="sr-only" for="pin">PIN code</label>
+                <input id="pin" inputmode="numeric" maxlength="6" placeholder="Enter PIN code, e.g. 160017" />
+                <button class="btn btn-outline btn-sm" type="submit">Check</button>
+              </form>
+              <p id="pin-msg">Delivering to <b>${esc(MP.city())}</b> — arrives by <b>${eta()}</b>.</p>
+            </div>
+
+            <div class="perks">
+              <div><b>100% genuine</b>From licensed distributors</div>
+              <div><b>24-hr delivery</b>Across the Tricity</div>
+              <div><b>Easy returns</b>Within 7 days*</div>
+            </div>
+
+            <div class="details">
+              <details open><summary>About this product</summary><div class="content"><p>${esc(p.desc)}</p></div></details>
+              <details open><summary>Key benefits</summary><div class="content"><ul>${p.highlights.map(h => `<li>${esc(h)}</li>`).join('')}</ul></div></details>
+              <details><summary>How to use</summary><div class="content"><p>${esc(p.use)}</p></div></details>
+              <details><summary>Safety information</summary><div class="content"><p>Read the label before use. Keep out of reach of children. Store in a cool, dry place away from direct sunlight. Consult your doctor if you are pregnant, breastfeeding or taking other medicines. *Medicines can't be returned once opened.</p></div></details>
+            </div>
+          </div>
+        </div>`;
+
+      // Quantity + cart
+      function syncQty() {
+        $('#q-val').textContent = qty;
+        const have = MP.cart()[p.id] || 0;
+        $('#in-cart').innerHTML = have ? `✓ ${have} in your cart · <button type="button" class="link-arrow" data-open="cart">View cart</button>` : '';
+      }
+      $('#q-dec').addEventListener('click', () => { qty = Math.max(1, qty - 1); syncQty(); });
+      $('#q-inc').addEventListener('click', () => { qty = Math.min(10, qty + 1); syncQty(); });
+      $('#add-btn').addEventListener('click', () => { if (MP.addToCart(p.id, Math.min(qty, 10 - (MP.cart()[p.id] || 0)) || 1)) { qty = 1; syncQty(); } });
+      $('#buy-btn').addEventListener('click', () => {
+        if (!MP.cart()[p.id]) MP.addToCart(p.id, qty, true);
+        MP.openPanel('checkout');
+      });
+      document.addEventListener('mp:cart', syncQty);
+      syncQty();
+
+      // PIN check
+      $('#pin-form').addEventListener('submit', e => {
+        e.preventDefault();
+        const pin = $('#pin').value.trim(), msg = $('#pin-msg');
+        const areas = { '160': 'Chandigarh', '140': 'Mohali', '134': 'Panchkula' };
+        const area = areas[pin.slice(0, 3)];
+        if (/^\d{6}$/.test(pin) && area) { msg.className = ''; msg.innerHTML = `✓ Delivers to <b>${pin}, ${area}</b> by <b>${eta()}</b>. ${p.price >= 499 ? 'Free delivery.' : 'Free delivery on orders above ₹499.'}`; }
+        else { msg.className = 'bad'; msg.textContent = /^\d{6}$/.test(pin) ? `Sorry, we don't deliver to ${pin} yet. We currently serve Chandigarh, Mohali and Panchkula.` : 'Please enter a valid 6-digit PIN code.'; }
+      });
+
+      // Recently viewed + related products
+      const recent = MP.store.get('recent', []).filter(x => x !== p.id);
+      MP.store.set('recent', [p.id, ...recent].slice(0, 8));
+      let related = PRODUCTS.filter(x => x.cat === p.cat && x.id !== p.id);
+      if (related.length < 4) related = related.concat(PRODUCTS.filter(x => x.cat !== p.cat && x.brand === p.brand), PRODUCTS.filter(x => x.cat !== p.cat && x.brand !== p.brand).sort((a, b) => b.sold - a.sold));
+      related = related.slice(0, 4);
+      $('#related').innerHTML = related.map(cardHTML).join('');
+      $('#related-sub').textContent = `More from ${cat.name} and similar products.`;
+      $('#related-all').href = `catalog.html?cat=${cat.id}`;
+      $('#related-wrap').hidden = false;
+    })();
+  </script>
+</body>
+</html>

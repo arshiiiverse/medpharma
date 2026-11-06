@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Medpharma — my orders. Concept project by Arshdeep Kaur. -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Orders & Bookings — Medpharma</title>
+  <meta name="description" content="Track your Medpharma orders, reorder medicines and view your lab test and doctor bookings." />
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#123a33" />
+  <link rel="icon" href="assets/logo-mark.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+
+<body data-page="orders">
+  <div id="mp-header"></div>
+
+  <main id="main" class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a><span>/</span><span aria-current="page">My Orders</span></nav>
+    <div class="page-title"><div><h1>My orders & bookings</h1><p>Orders are saved in this browser. In this demo, order status moves forward every few minutes.</p></div></div>
+
+    <div class="track-box" id="track">
+      <h2 style="font-size:1.1rem;font-weight:800">Track an order</h2>
+      <form id="track-form">
+        <label class="sr-only" for="track-id">Order ID</label>
+        <input id="track-id" placeholder="Enter order ID, e.g. MP-4K2J9Q" autocomplete="off" />
+        <button class="btn btn-dark" type="submit">Track</button>
+      </form>
+      <p id="track-msg" style="font-size:.9rem;color:var(--muted)"></p>
+    </div>
+
+    <section class="inner">
+      <div class="section-head"><div><h2>Orders</h2><p id="order-count"></p></div></div>
+      <div class="orders" id="orders"></div>
+    </section>
+
+    <section class="inner">
+      <div class="section-head"><div><h2>Lab & doctor bookings</h2></div></div>
+      <div class="orders" id="bookings"></div>
+    </section>
+  </main>
+
+  <div id="mp-footer"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/app.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      const { byId, rupee, esc, store, toast } = window.MP;
+      const $ = s => document.querySelector(s);
+      const STEPS = ['Order placed', 'Packed', 'Out for delivery', 'Delivered'];
+
+      // Demo: status advances with time since the order was placed
+      function stage(o) {
+        if (o.status === 'cancelled') return -1;
+        const mins = (Date.now() - new Date(o.date)) / 60000;
+        return mins < 2 ? 0 : mins < 5 ? 1 : mins < 10 ? 2 : 3;
+      }
+      const fmt = d => new Date(d).toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+
+      function orderHTML(o) {
+        const s = stage(o);
+        const label = s < 0 ? 'Cancelled' : STEPS[s];
+        const cls = s < 0 ? 'cancelled' : s === 3 ? 'delivered' : '';
+        const items = o.items.map(i => ({ ...i, p: byId(i.id) })).filter(i => i.p);
+        return `
+          <article class="order" id="order-${o.id}">
+            <div class="order-head">
+              <div>
+                <h3>Order ${o.id}</h3>
+                <p>${fmt(o.date)} · ${o.items.reduce((a, i) => a + i.q, 0)} item(s) · <b style="color:var(--ink)">${rupee(o.total)}</b> · ${esc(o.pay)}</p>
+                <p>Deliver to ${esc(o.name)}, ${esc(o.address)}, ${esc(o.city)} ${esc(o.pin)}</p>
+              </div>
+              <span class="status ${cls}">${label}</span>
+            </div>
+            ${s >= 0 ? `<div class="tracker" aria-label="Order progress: ${label}">${STEPS.map((st, i) => `<div class="${i <= s ? 'done' : ''}">${st}</div>`).join('')}</div>` : ''}
+            <div class="order-items">${items.map(i => `<a href="product.html?id=${i.p.id}"><img src="${i.p.img}" alt="" />${esc(i.p.name)} × ${i.q}</a>`).join('')}</div>
+            <div class="order-actions">
+              <button type="button" class="btn btn-outline btn-sm" data-reorder="${o.id}">Reorder</button>
+              ${s >= 0 && s < 2 ? `<button type="button" class="btn btn-sm" style="color:var(--danger)" data-cancel="${o.id}">Cancel order</button>` : ''}
+              ${s === 3 ? '<span style="font-size:.85rem;color:var(--muted);align-self:center">Delivered — hope you feel better soon! 💚</span>' : ''}
+            </div>
+          </article>`;
+      }
+
+      function render() {
+        const orders = store.get('orders', []).filter(o => Array.isArray(o.items));
+        $('#order-count').textContent = orders.length ? `${orders.length} order${orders.length === 1 ? '' : 's'}` : '';
+        $('#orders').innerHTML = orders.length ? orders.map(orderHTML).join('')
+          : '<div class="empty"><b>No orders yet</b>When you place an order it will show up here.<div style="margin-top:16px"><a class="btn btn-dark btn-sm" href="catalog.html">Start shopping</a></div></div>';
+        const bookings = store.get('bookings', []);
+        $('#bookings').innerHTML = bookings.length ? bookings.map(b => `
+          <div class="booking">
+            <div><b>${b.type === 'lab' ? '🧪' : '👩‍⚕️'} ${esc(b.title)}</b><span>${esc(b.when)} · ${rupee(b.price)} · Ref ${esc(b.id)}</span></div>
+            <span class="status">Confirmed</span>
+          </div>`).join('')
+          : '<div class="empty"><b>No bookings yet</b><a class="link-arrow" href="lab-tests.html">Book a lab test</a> or <a class="link-arrow" href="doctors.html">consult a doctor</a>.</div>';
+      }
+
+      document.addEventListener('click', e => {
+        const r = e.target.closest('[data-reorder]');
+        if (r) {
+          const o = store.get('orders', []).find(x => x.id === r.dataset.reorder);
+          let added = 0;
+          o.items.forEach(i => { if (byId(i.id)) { MP.setQty(i.id, Math.min(10, (MP.cart()[i.id] || 0) + i.q)); added++; } });
+          toast(`${added} product${added === 1 ? '' : 's'} added to cart`, { label: 'View cart', run: () => MP.openPanel('cart') });
+        }
+        const c = e.target.closest('[data-cancel]');
+        if (c) {
+          const orders = store.get('orders', []);
+          const o = orders.find(x => x.id === c.dataset.cancel);
+          o.status = 'cancelled';
+          store.set('orders', orders);
+          toast(`Order ${o.id} cancelled`);
+          render();
+        }
+      });
+
+      $('#track-form').addEventListener('submit', e => {
+        e.preventDefault();
+        const id = $('#track-id').value.trim().toUpperCase();
+        const o = store.get('orders', []).find(x => x.id === id);
+        const msg = $('#track-msg');
+        if (!id) { msg.textContent = 'Please enter your order ID.'; return; }
+        if (!o) { msg.innerHTML = `We couldn't find order <b>${esc(id)}</b> in this browser. Check the ID in your order confirmation.`; return; }
+        const s = stage(o);
+        msg.innerHTML = `Order <b>${o.id}</b>: <b style="color:var(--mint-dark)">${s < 0 ? 'Cancelled' : STEPS[s]}</b>.`;
+        const card = document.getElementById('order-' + o.id);
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        card.animate([{ boxShadow: '0 0 0 3px var(--mint)' }, { boxShadow: '0 0 0 0 transparent' }], { duration: 1600 });
+      });
+
+      render();
+      setInterval(render, 30000);   // refresh demo status
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Medpharma — lab tests. Concept project by Arshdeep Kaur. -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Book Lab Tests at Home in Chandigarh — Medpharma</title>
+  <meta name="description" content="Book full body checkups, thyroid, diabetes, heart and vitamin tests with free home sample collection in Chandigarh, Mohali and Panchkula. Reports in 24 hours." />
+  <meta name="theme-color" content="#123a33" />
+  <link rel="canonical" href="https://arshiiiverse.github.io/medpharma/lab-tests.html" />
+  <link rel="icon" href="assets/logo-mark.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+
+<body data-page="lab">
+  <div id="mp-header"></div>
+
+  <main id="main" class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a><span>/</span><span aria-current="page">Lab Tests</span></nav>
+
+    <div class="page-hero">
+      <div>
+        <h1>Lab tests at home, reports on your phone.</h1>
+        <p>NABL-accredited partner labs, certified phlebotomists and free home sample collection across the Tricity.</p>
+        <div class="pills"><span>🏠 Free home collection</span><span>⏱ Reports in 8–48 hrs</span><span>💰 Up to 50% off</span></div>
+      </div>
+      <div class="art"><img src="images/lab-nurse.jpg" alt="Nurse reviewing patient details on a tablet" width="720" height="480" /></div>
+    </div>
+
+    <section class="inner">
+      <div class="section-head">
+        <div><h2>Popular tests & packages</h2><p id="test-count"></p></div>
+        <label><span class="sr-only">Sort tests</span>
+          <select class="sort" id="test-sort">
+            <option value="popular">Most popular</option>
+            <option value="low">Price: low to high</option>
+            <option value="high">Price: high to low</option>
+            <option value="params">Most parameters</option>
+          </select>
+        </label>
+      </div>
+      <div class="tabs" role="tablist" id="test-tabs" aria-label="Filter tests"></div>
+      <div class="tests" id="tests"></div>
+    </section>
+
+    <section class="inner">
+      <div class="section-head"><div><h2>How it works</h2></div></div>
+      <div class="steps">
+        <div class="step"><h3>Book online</h3><p>Choose a test, a date and a time slot that suits you.</p></div>
+        <div class="step"><h3>Sample collection</h3><p>A certified phlebotomist visits your home with sealed, sterile kits.</p></div>
+        <div class="step"><h3>Lab processing</h3><p>Samples are processed at an NABL-accredited partner lab.</p></div>
+        <div class="step"><h3>Digital report</h3><p>Get your report by SMS and email — with a free doctor review.</p></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="mp-footer"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/app.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      const { LAB_TESTS, rupee, esc } = window.MP;
+      const { LAB_TAGS } = window.MP_DATA;
+      const $ = s => document.querySelector(s);
+      let tag = new URLSearchParams(location.search).get('type') || '';
+      if (!LAB_TAGS.some(t => t[0] === tag)) tag = '';
+
+      $('#test-tabs').innerHTML = LAB_TAGS.map(([id, name]) => `<button class="tab" role="tab" data-type="${id}">${name}</button>`).join('');
+      const sorts = {
+        popular: (a, b) => (b.popular || 0) - (a.popular || 0) || a.id - b.id,
+        low: (a, b) => a.price - b.price,
+        high: (a, b) => b.price - a.price,
+        params: (a, b) => b.params - a.params
+      };
+
+      function render() {
+        const list = LAB_TESTS.filter(t => !tag || t.tag === tag).sort(sorts[$('#test-sort').value]);
+        document.querySelectorAll('#test-tabs .tab').forEach(t => t.setAttribute('aria-selected', String(t.dataset.type === tag)));
+        $('#test-count').textContent = `${list.length} test${list.length === 1 ? '' : 's'} · free home sample collection`;
+        $('#tests').innerHTML = list.map((t, n) => `
+          <article class="test" style="animation-delay:${n * 40}ms">
+            <div class="test-top">
+              <h3>${esc(t.name)}</h3>
+              ${t.popular ? '<span class="tag-pop">Popular</span>' : ''}
+            </div>
+            <div class="facts"><span>${t.params} parameter${t.params > 1 ? 's' : ''}</span><span>Report in ${t.tat}</span><span>${esc(t.fasting)}</span></div>
+            <ul>${t.includes.map(i => `<li>${esc(i)}</li>`).join('')}</ul>
+            <div class="foot-row">
+              <p class="price"><b>${rupee(t.price)}</b><s>${rupee(t.mrp)}</s> <span style="color:var(--coral);font-weight:800;font-size:.8rem">${Math.round((1 - t.price / t.mrp) * 100)}% off</span></p>
+              <button type="button" class="btn btn-dark btn-sm" data-open="lab" data-test="${t.id}">Book now</button>
+            </div>
+          </article>`).join('');
+      }
+
+      $('#test-tabs').addEventListener('click', e => {
+        const b = e.target.closest('.tab'); if (!b) return;
+        tag = b.dataset.type;
+        history.replaceState(null, '', 'lab-tests.html' + (tag ? '?type=' + tag : ''));
+        render();
+      });
+      $('#test-sort').addEventListener('change', render);
+      render();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Medpharma — contact. Concept project by Arshdeep Kaur. -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us — Medpharma</title>
+  <meta name="description" content="Get in touch with Medpharma for order help, prescriptions, lab bookings or partnerships." />
+  <meta name="theme-color" content="#123a33" />
+  <link rel="canonical" href="https://arshiiiverse.github.io/medpharma/contact.html" />
+  <link rel="icon" href="assets/logo-mark.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+
+<body data-page="contact">
+  <div id="mp-header"></div>
+
+  <main id="main" class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a><span>/</span><span aria-current="page">Contact</span></nav>
+    <div class="page-title"><div><h1>We're here to help</h1><p>Questions about an order, a prescription or a booking? Our team replies within 2 hours (9 am – 9 pm).</p></div></div>
+
+    <div class="contact-grid" style="padding-bottom:20px">
+      <div class="info-card">
+        <div class="info-row"><span class="ic">📞</span><div><b>Pharmacist helpline</b><span>1800-000-0000 (demo number)</span></div></div>
+        <div class="info-row"><span class="ic">💬</span><div><b>WhatsApp</b><span>+91 00000 00000 (demo)</span></div></div>
+        <div class="info-row"><span class="ic">✉️</span><div><b>Email</b><span>care@medpharma.example</span></div></div>
+        <div class="info-row"><span class="ic">📍</span><div><b>Store</b><span>SCO 00, Sector 17, Chandigarh 160017 (fictional address)</span></div></div>
+        <div class="info-row"><span class="ic">🕘</span><div><b>Hours</b><span>Store: 8 am – 11 pm, every day<br />Doctors: 24/7</span></div></div>
+        <div class="info-row"><span class="ic">❓</span><div><b>Quick answers</b><a class="link-arrow" href="faq.html">Read our FAQs →</a></div></div>
+      </div>
+
+      <div class="panel">
+        <form id="contact-form" novalidate>
+          <div class="form-grid two">
+            <div class="field"><label for="ct-name">Full name</label><input id="ct-name" autocomplete="name" /><p class="err">Please enter your name.</p></div>
+            <div class="field"><label for="ct-email">Email</label><input id="ct-email" type="email" autocomplete="email" /><p class="err">Please enter a valid email address.</p></div>
+            <div class="field"><label for="ct-phone">Mobile (optional)</label><input id="ct-phone" inputmode="numeric" maxlength="10" autocomplete="tel-national" /><p class="err">Enter a valid 10-digit mobile number.</p></div>
+            <div class="field"><label for="ct-topic">Topic</label>
+              <select id="ct-topic"><option>Order help</option><option>Prescription</option><option>Lab test booking</option><option>Doctor consultation</option><option>Returns & refunds</option><option>Partnerships</option><option>Something else</option></select>
+            </div>
+            <div class="field full"><label for="ct-order">Order ID (optional)</label><input id="ct-order" placeholder="e.g. MP-4K2J9Q" /></div>
+            <div class="field full"><label for="ct-msg">Message</label><textarea id="ct-msg" style="height:130px"></textarea><p class="err">Please write a message (at least 15 characters).</p></div>
+          </div>
+          <button type="submit" class="btn btn-dark" style="margin-top:18px">Send message</button>
+          <p class="note" style="text-align:left">Demo form — messages are saved in your browser only.</p>
+        </form>
+        <div class="success" id="contact-success" hidden></div>
+      </div>
+    </div>
+  </main>
+
+  <div id="mp-footer"></div>
+  <script src="assets/data.js"></script>
+  <script src="assets/app.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      const $ = s => document.querySelector(s);
+      const check = (el, ok) => { el.closest('.field').classList.toggle('invalid', !ok); el.setAttribute('aria-invalid', String(!ok)); return ok; };
+      const params = new URLSearchParams(location.search);
+      if (params.get('topic')) $('#ct-topic').value = params.get('topic');
+      if (params.get('order')) $('#ct-order').value = params.get('order');
+
+      $('#contact-form').addEventListener('submit', e => {
+        e.preventDefault();
+        const phone = $('#ct-phone').value.trim();
+        const ok = [
+          check($('#ct-name'), $('#ct-name').value.trim().length >= 2),
+          check($('#ct-email'), /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test($('#ct-email').value.trim())),
+          check($('#ct-phone'), !phone || /^[6-9]\d{9}$/.test(phone)),
+          check($('#ct-msg'), $('#ct-msg').value.trim().length >= 15)
+        ].every(Boolean);
+        if (!ok) { const bad = document.querySelector('#contact-form .field.invalid input, #contact-form .field.invalid textarea'); if (bad) bad.focus(); return; }
+        const ticket = 'TKT-' + Date.now().toString(36).toUpperCase().slice(-6);
+        MP.store.set('messages', [{ ticket, topic: $('#ct-topic').value, date: new Date().toISOString() }, ...MP.store.get('messages', [])].slice(0, 20));
+        e.target.hidden = true;
+        const s = $('#contact-success');
+        s.innerHTML = `<div class="tick-big"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 12l5 5L20 7"/></svg></div>
+          <h3>Thanks, ${MP.esc($('#ct-name').value.trim().split(' ')[0])}!</h3>
+          <p>We've received your message about <b>${MP.esc($('#ct-topic').value.toLowerCase())}</b> and will reply to ${MP.esc($('#ct-email').value.trim())} within 2 hours.</p>
+          <span class="ref">Ticket ${ticket}</span>
+          <div><button type="button" class="btn btn-outline" style="margin-top:20px" id="contact-again">Send another message</button></div>`;
+        s.hidden = false;
+        $('#contact-again').addEventListener('click', () => { e.target.reset(); e.target.hidden = false; s.hidden = true; $('#ct-name').focus(); });
+      });
+    })();
+  </script>
+</body>
+</html>

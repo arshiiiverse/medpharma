@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Medpharma — page not found. GitHub Pages serves this for missing URLs. -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    // Missing URLs can be at any depth, so point relative links back at the site root
+    document.write('<base href="' + (location.pathname.indexOf('/medpharma/') === 0 ? '/medpharma/' : '/') + '">');
+  </script>
+  <title>Page not found — Medpharma</title>
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#123a33" />
+  <link rel="icon" href="assets/logo-mark.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+
+<body data-page="404">
+  <div id="mp-header"></div>
+  <main id="main" class="wrap">
+    <div class="not-found">
+      <p style="font-size:4rem;font-weight:800;color:var(--mint-dark);letter-spacing:-.04em">404</p>
+      <h1>This page has gone missing</h1>
+      <p>The link may be broken or the page may have moved. Try searching, or head back to the store.</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <a class="btn btn-dark" href="index.html">Go to homepage</a>
+        <a class="btn btn-outline" href="catalog.html">Browse products</a>
+      </div>
+    </div>
+  </main>
+  <div id="mp-footer"></div>
+  <script src="assets/data.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>

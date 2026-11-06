@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://arshiiiverse.github.io/medpharma/sitemap.xml

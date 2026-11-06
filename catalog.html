@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Medpharma — catalog page. Concept project by Arshdeep Kaur. -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shop All Products — Medpharma</title>
+  <meta name="description" content="Browse medicines, vitamins, skin care, baby care, Ayurveda and health devices. Filter by brand, price and rating. Delivered across Chandigarh within 24 hours." />
+  <meta name="theme-color" content="#123a33" />
+  <link rel="canonical" href="https://arshiiiverse.github.io/medpharma/catalog.html" />
+  <link rel="icon" href="assets/logo-mark.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+
+<body data-page="catalog">
+  <div id="mp-header"></div>
+
+  <main id="main" class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb" id="crumbs"></nav>
+    <div class="page-title">
+      <div>
+        <h1 id="title">All Products</h1>
+        <p id="subtitle">Everything in the Medpharma store.</p>
+      </div>
+    </div>
+
+    <div class="catalog">
+      <!-- Filters -->
+      <aside class="filters" id="filters" aria-label="Filters">
+        <div class="filters-head">
+          <h2>Filters</h2>
+          <button type="button" class="link-arrow" id="clear-filters">Clear all</button>
+        </div>
+        <div class="filter-group">
+          <h3>Category</h3>
+          <div id="f-cats"></div>
+        </div>
+        <div class="filter-group">
+          <h3>Brand</h3>
+          <div id="f-brands"></div>
+        </div>
+        <div class="filter-group">
+          <h3>Price (₹)</h3>
+          <div class="price-inputs">
+            <label class="sr-only" for="f-min">Minimum price</label>
+            <input id="f-min" type="number" min="0" inputmode="numeric" placeholder="Min" />
+            <span>–</span>
+            <label class="sr-only" for="f-max">Maximum price</label>
+            <input id="f-max" type="number" min="0" inputmode="numeric" placeholder="Max" />
+          </div>
+          <div id="f-price-presets" style="margin-top:10px"></div>
+        </div>
+        <div class="filter-group">
+          <h3>More filters</h3>
+          <label class="opt"><input type="checkbox" id="f-rating" /> Rated 4.6 ★ and above</label>
+          <label class="opt"><input type="checkbox" id="f-offer" /> Discount 20% or more</label>
+          <label class="opt"><input type="checkbox" id="f-new" /> New arrivals</label>
+          <label class="opt"><input type="checkbox" id="f-norx" /> Hide prescription items</label>
+        </div>
+      </aside>
+      <div class="filters-apply"><button type="button" class="btn btn-dark btn-block" id="apply-filters">Show results</button></div>
+
+      <!-- Results -->
+      <div>
+        <div class="cat-toolbar">
+          <div class="left">
+            <button type="button" class="btn btn-outline btn-sm filter-toggle" id="open-filters" aria-controls="filters" aria-expanded="false">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+              Filters
+            </button>
+            <form class="cat-search" id="cat-search" role="search">
+              <label class="sr-only" for="q">Search within results</label>
+              <input id="q" type="search" placeholder="Search products…" autocomplete="off" />
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="color:var(--muted)"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+            </form>
+          </div>
+          <label>
+            <span class="sr-only">Sort by</span>
+            <select class="sort" id="sort">
+              <option value="popular">Sort: Most popular</option>
+              <option value="low">Price: low to high</option>
+              <option value="high">Price: high to low</option>
+              <option value="rating">Top rated</option>
+              <option value="discount">Biggest discount</option>
+              <option value="new">Newest first</option>
+            </select>
+          </label>
+        </div>
+        <div class="chips" id="chips" aria-live="polite"></div>
+        <div class="grid" id="results"></div>
+        <nav class="pager" id="pager" aria-label="Pagination"></nav>
+      </div>
+    </div>
+  </main>
+
+  <div id="mp-footer"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/app.js"></script>
+  <script>
+    /* ---------- Catalog page ---------- */
+    (function () {
+      'use strict';
+      const { CATEGORIES, PRODUCTS, cardHTML, rupee, discount, catById, esc } = window.MP;
+      const $ = s => document.querySelector(s);
+      const $$ = s => Array.from(document.querySelectorAll(s));
+      const PER_PAGE = 12;
+      const BRANDS = [...new Set(PRODUCTS.map(p => p.brand))].sort();
+      const PRESETS = [[0, 199, 'Under ₹200'], [200, 499, '₹200 – ₹499'], [500, 999, '₹500 – ₹999'], [1000, null, '₹1,000 and above']];
+
+      /* ---- State <-> URL ---- */
+      function readURL() {
+        const u = new URLSearchParams(location.search);
+        const s = {
+          cat: catById(u.get('cat')) ? u.get('cat') : '',
+          q: (u.get('q') || '').trim(),
+          brands: (u.get('brand') || '').split(',').map(b => b.trim()).filter(b => BRANDS.includes(b)),
+          min: u.get('min') ? +u.get('min') : null,
+          max: u.get('max') ? +u.get('max') : null,
+          rating: u.get('rating') === '1',
+          offer: u.get('offer') === '1',
+          isNew: u.get('new') === '1',
+          norx: u.get('norx') === '1',
+          sort: u.get('sort') || 'popular',
+          page: Math.max(1, +u.get('page') || 1)
+        };
+        // Short links used in the header menu
+        const tag = u.get('tag');
+        if (tag === 'under') s.max = 499;
+        if (tag === 'new') s.isNew = true;
+        if (tag === 'offer') s.offer = true;
+        return s;
+      }
+      let state = readURL();
+
+      function writeURL(push) {
+        const u = new URLSearchParams();
+        if (state.cat) u.set('cat', state.cat);
+        if (state.q) u.set('q', state.q);
+        if (state.brands.length) u.set('brand', state.brands.join(','));
+        if (state.min != null) u.set('min', state.min);
+        if (state.max != null) u.set('max', state.max);
+        if (state.rating) u.set('rating', '1');
+        if (state.offer) u.set('offer', '1');
+        if (state.isNew) u.set('new', '1');
+        if (state.norx) u.set('norx', '1');
+        if (state.sort !== 'popular') u.set('sort', state.sort);
+        if (state.page > 1) u.set('page', state.page);
+        const url = 'catalog.html' + (u.toString() ? '?' + u : '');
+        history[push ? 'pushState' : 'replaceState'](null, '', url);
+      }
+
+      /* ---- Filtering ---- */
+      function matches(p, ignore) {
+        if (ignore !== 'cat' && state.cat && p.cat !== state.cat) return false;
+        if (ignore !== 'brand' && state.brands.length && !state.brands.includes(p.brand)) return false;
+        if (state.min != null && p.price < state.min) return false;
+        if (state.max != null && p.price > state.max) return false;
+        if (state.rating && p.rating < 4.6) return false;
+        if (state.offer && discount(p) < 20) return false;
+        if (state.isNew && !p.isNew) return false;
+        if (state.norx && p.rx) return false;
+        if (state.q) {
+          const hay = (p.name + ' ' + p.brand + ' ' + p.pack + ' ' + catById(p.cat).name + ' ' + p.desc).toLowerCase();
+          if (!state.q.toLowerCase().split(/\s+/).every(w => hay.includes(w))) return false;
+        }
+        return true;
+      }
+      const sorters = {
+        popular: (a, b) => b.sold - a.sold,
+        low: (a, b) => a.price - b.price,
+        high: (a, b) => b.price - a.price,
+        rating: (a, b) => b.rating - a.rating || b.reviews - a.reviews,
+        discount: (a, b) => discount(b) - discount(a),
+        new: (a, b) => (b.isNew - a.isNew) || b.id - a.id
+      };
+
+      /* ---- Render ---- */
+      function renderFilters() {
+        const forCat = PRODUCTS.filter(p => matches(p, 'cat'));
+        $('#f-cats').innerHTML = [['', 'All categories', forCat.length], ...CATEGORIES.map(c => [c.id, c.name, forCat.filter(p => p.cat === c.id).length])]
+          .map(([id, name, n]) => `<label class="opt"><input type="radio" name="f-cat" value="${id}" ${state.cat === id ? 'checked' : ''} /> ${name}<span class="n">${n}</span></label>`).join('');
+        const forBrand = PRODUCTS.filter(p => matches(p, 'brand'));
+        $('#f-brands').innerHTML = BRANDS.map(b => `<label class="opt"><input type="checkbox" name="f-brand" value="${esc(b)}" ${state.brands.includes(b) ? 'checked' : ''} /> ${esc(b)}<span class="n">${forBrand.filter(p => p.brand === b).length}</span></label>`).join('');
+        $('#f-price-presets').innerHTML = PRESETS.map(([lo, hi, label], i) => `<label class="opt"><input type="radio" name="f-preset" value="${i}" ${state.min === (lo || null) && state.max === hi ? 'checked' : ''} /> ${label}</label>`).join('');
+        $('#f-min').value = state.min ?? '';
+        $('#f-max').value = state.max ?? '';
+        $('#f-rating').checked = state.rating;
+        $('#f-offer').checked = state.offer;
+        $('#f-new').checked = state.isNew;
+        $('#f-norx').checked = state.norx;
+        $('#sort').value = sorters[state.sort] ? state.sort : 'popular';
+        $('#q').value = state.q;
+      }
+
+      function chip(label, clear) { return `<span class="chip">${label} <button type="button" data-clear="${clear}" aria-label="Remove filter: ${esc(label)}">✕</button></span>`; }
+
+      function render() {
+        const list = PRODUCTS.filter(p => matches(p)).sort(sorters[state.sort] || sorters.popular);
+        const pages = Math.max(1, Math.ceil(list.length / PER_PAGE));
+        if (state.page > pages) state.page = pages;
+        const pageItems = list.slice((state.page - 1) * PER_PAGE, state.page * PER_PAGE);
+
+        // Title, breadcrumb, document title
+        const cat = catById(state.cat);
+        const title = state.q ? `Results for “${esc(state.q)}”` : cat ? cat.name : state.isNew ? 'New Arrivals' : state.offer ? 'Offers'
+          : state.max === 499 && state.min == null ? 'Under ₹500' : 'All Products';
+        $('#title').innerHTML = title;
+        $('#subtitle').textContent = cat && !state.q ? cat.blurb : `${list.length} product${list.length === 1 ? '' : 's'} available for delivery in ${MP.city()}.`;
+        document.title = `${$('#title').textContent} — Medpharma`;
+        $('#crumbs').innerHTML = `<a href="index.html">Home</a><span>/</span>` + (cat ? `<a href="catalog.html">Shop</a><span>/</span><span aria-current="page">${cat.name}</span>` : `<span aria-current="page">Shop</span>`);
+
+        // Active filter chips
+        const chips = [];
+        if (state.cat) chips.push(chip(cat.name, 'cat'));
+        if (state.q) chips.push(chip(`“${esc(state.q)}”`, 'q'));
+        state.brands.forEach(b => chips.push(chip(esc(b), 'brand:' + b)));
+        if (state.min != null || state.max != null) chips.push(chip(`${state.min != null ? rupee(state.min) : '₹0'} – ${state.max != null ? rupee(state.max) : 'any'}`, 'price'));
+        if (state.rating) chips.push(chip('4.6 ★ & up', 'rating'));
+        if (state.offer) chips.push(chip('20%+ off', 'offer'));
+        if (state.isNew) chips.push(chip('New', 'isNew'));
+        if (state.norx) chips.push(chip('No Rx items', 'norx'));
+        $('#chips').innerHTML = `<span>${list.length} result${list.length === 1 ? '' : 's'}</span>${chips.join('')}${chips.length > 1 ? '<button type="button" class="clear-all" data-clear="all">Clear all</button>' : ''}`;
+
+        // Grid
+        $('#results').innerHTML = pageItems.length ? pageItems.map(cardHTML).join('') : `
+          <div class="empty"><b>No products match these filters</b>Try removing a filter or searching for something else.
+            <div style="margin-top:16px"><button type="button" class="btn btn-dark btn-sm" data-clear="all">Clear all filters</button></div></div>`;
+
+        // Pagination
+        if (pages > 1) {
+          let html = `<button type="button" data-goto="${state.page - 1}" ${state.page === 1 ? 'disabled' : ''} aria-label="Previous page">‹ Prev</button>`;
+          for (let i = 1; i <= pages; i++) html += `<button type="button" data-goto="${i}" ${i === state.page ? 'aria-current="page"' : ''}>${i}</button>`;
+          html += `<button type="button" data-goto="${state.page + 1}" ${state.page === pages ? 'disabled' : ''} aria-label="Next page">Next ›</button>`;
+          $('#pager').innerHTML = html;
+        } else $('#pager').innerHTML = '';
+
+        $('#apply-filters').textContent = `Show ${list.length} result${list.length === 1 ? '' : 's'}`;
+        renderFilters();
+      }
+
+      function update(changes, push = true) {
+        Object.assign(state, changes);
+        if (!('page' in changes)) state.page = 1;
+        writeURL(push);
+        render();
+      }
+
+      /* ---- Events ---- */
+      $('#filters').addEventListener('change', e => {
+        const t = e.target;
+        if (t.name === 'f-cat') update({ cat: t.value });
+        if (t.name === 'f-brand') update({ brands: $$('input[name="f-brand"]:checked').map(x => x.value) });
+        if (t.name === 'f-preset') { const [lo, hi] = PRESETS[t.value]; update({ min: lo || null, max: hi }); }
+        if (t.id === 'f-min' || t.id === 'f-max') {
+          let min = $('#f-min').value === '' ? null : Math.max(0, +$('#f-min').value);
+          let max = $('#f-max').value === '' ? null : Math.max(0, +$('#f-max').value);
+          if (min != null && max != null && min > max) [min, max] = [max, min];
+          update({ min, max });
+        }
+        if (t.id === 'f-rating') update({ rating: t.checked });
+        if (t.id === 'f-offer') update({ offer: t.checked });
+        if (t.id === 'f-new') update({ isNew: t.checked });
+        if (t.id === 'f-norx') update({ norx: t.checked });
+      });
+      $('#sort').addEventListener('change', e => update({ sort: e.target.value }));
+      let typing;
+      $('#q').addEventListener('input', e => { clearTimeout(typing); typing = setTimeout(() => update({ q: e.target.value.trim() }, false), 250); });
+      $('#cat-search').addEventListener('submit', e => { e.preventDefault(); update({ q: $('#q').value.trim() }); });
+
+      const CLEAR_ALL = { cat: '', q: '', brands: [], min: null, max: null, rating: false, offer: false, isNew: false, norx: false };
+      $('#clear-filters').addEventListener('click', () => update({ ...CLEAR_ALL }));
+      document.addEventListener('click', e => {
+        const c = e.target.closest('[data-clear]');
+        if (c) {
+          const k = c.dataset.clear;
+          if (k === 'all') update({ ...CLEAR_ALL });
+          else if (k.startsWith('brand:')) update({ brands: state.brands.filter(b => b !== k.slice(6)) });
+          else if (k === 'price') update({ min: null, max: null });
+          else update({ [k]: typeof state[k] === 'boolean' ? false : '' });
+        }
+        const pg = e.target.closest('#pager [data-goto]');
+        if (pg && !pg.disabled) {
+          update({ page: +pg.dataset.goto });
+          $('#title').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+
+      // Mobile filter drawer
+      const filters = $('#filters'), overlay = $('#overlay');
+      function toggleFilters(open) {
+        filters.classList.toggle('open', open);
+        overlay.classList.toggle('show', open);
+        document.body.classList.toggle('locked', open);
+        $('#open-filters').setAttribute('aria-expanded', String(open));
+        if (open) filters.querySelector('input').focus();
+      }
+      $('#open-filters').addEventListener('click', () => toggleFilters(true));
+      $('#apply-filters').addEventListener('click', () => toggleFilters(false));
+      document.addEventListener('mp:overlay', () => toggleFilters(false));
+      document.addEventListener('keydown', e => { if (e.key === 'Escape' && filters.classList.contains('open')) toggleFilters(false); });
+      document.addEventListener('mp:city', render);
+
+      window.addEventListener('popstate', () => { state = readURL(); render(); });
+
+      writeURL(false);   // normalise short links like ?tag=under
+      render();
+    })();
+  </script>
+</body>
+</html>
