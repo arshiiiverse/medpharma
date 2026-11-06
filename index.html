@@ -4,7 +4,8 @@
   <!-- =========================================================
        Remedy Lane — Online Pharmacy Landing Page
        Concept project by Arshdeep Kaur. Fictional brand.
-       Single file, no build step, no external JS/CSS frameworks.
+       Single HTML file + /images. No frameworks, no build step.
+       Photos: StockSnap.io (CC0 public domain).
        ========================================================= -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -17,11 +18,14 @@
   <meta property="og:description" content="Medicines, lab tests and doctor consultations — delivered within 24 hours." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://arshiiiverse.github.io/remedy-lane/" />
+  <meta property="og:image" content="https://arshiiiverse.github.io/remedy-lane/images/hero-doctor.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23123a33'/%3E%3Cpath d='M32 16v32M16 32h32' stroke='%2337d39b' stroke-width='9' stroke-linecap='round'/%3E%3C/svg%3E" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="preload" as="image" href="images/hero-doctor.jpg" />
 
   <script type="application/ld+json">
   {
@@ -30,7 +34,8 @@
     "name": "Remedy Lane",
     "description": "Online pharmacy with 24-hour medicine delivery, home lab tests and video doctor consultations.",
     "areaServed": ["Chandigarh", "Mohali", "Panchkula"],
-    "url": "https://arshiiiverse.github.io/remedy-lane/"
+    "url": "https://arshiiiverse.github.io/remedy-lane/",
+    "image": "https://arshiiiverse.github.io/remedy-lane/images/hero-doctor.jpg"
   }
   </script>
 
@@ -50,6 +55,7 @@
       --mint-tint: #e6f8f0;
       --coral: #ff7a59;        /* discounts / badges */
       --sun: #ffc845;
+      --danger: #d64545;
       --radius: 18px;
       --shadow: 0 18px 40px -22px rgba(16, 35, 31, .35);
     }
@@ -62,14 +68,17 @@
       color: var(--ink); background: var(--bg); line-height: 1.5;
       -webkit-font-smoothing: antialiased;
     }
+    body.locked { overflow: hidden; }
     h1, h2, h3, h4, p { margin: 0; }
     a { color: inherit; text-decoration: none; }
-    button, input, select { font: inherit; color: inherit; }
+    button, input, select, textarea { font: inherit; color: inherit; }
     button { cursor: pointer; border: 0; background: none; }
     img, svg { display: block; max-width: 100%; }
     ul { list-style: none; margin: 0; padding: 0; }
     :focus-visible { outline: 2px solid var(--mint-dark); outline-offset: 3px; border-radius: 8px; }
     .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .skip { position: absolute; left: -999px; top: 8px; z-index: 100; background: #fff; padding: 8px 14px; border-radius: 8px; }
+    .skip:focus { left: 8px; }
 
     .wrap { width: 100%; max-width: 1240px; margin-inline: auto; padding-inline: 20px; }
     @media (min-width: 768px) { .wrap { padding-inline: 32px; } }
@@ -78,9 +87,10 @@
     .btn {
       display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
       height: 48px; padding: 0 1.4rem; border-radius: 999px; font-weight: 700; font-size: .95rem;
-      transition: background .2s, color .2s, transform .15s, box-shadow .2s; white-space: nowrap;
+      transition: background .2s, color .2s, transform .15s, box-shadow .2s, opacity .2s; white-space: nowrap;
     }
     .btn:active { transform: translateY(1px); }
+    .btn[disabled] { opacity: .5; cursor: not-allowed; }
     .btn-mint { background: var(--mint); color: var(--brand); }
     .btn-mint:hover { background: #4fe0ab; box-shadow: 0 10px 24px -10px rgba(55, 211, 155, .8); }
     .btn-ghost { border: 1.5px solid rgba(255,255,255,.55); color: #fff; }
@@ -89,6 +99,7 @@
     .btn-dark:hover { background: var(--brand-2); }
     .btn-outline { border: 1.5px solid var(--brand); color: var(--brand); background: #fff; }
     .btn-outline:hover { background: var(--brand); color: #fff; }
+    .btn-block { width: 100%; }
 
     .section-head { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 28px; flex-wrap: wrap; }
     .section-head h2 { font-size: clamp(1.6rem, 3vw, 2.1rem); font-weight: 800; letter-spacing: -.02em; }
@@ -104,7 +115,7 @@
     @media (min-width: 768px) { .strip .hide-sm { display: block; } }
 
     /* ---------- Header ---------- */
-    .header { position: sticky; top: 0; z-index: 40; background: rgba(255,255,255,.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+    .header { position: sticky; top: 0; z-index: 40; background: rgba(255,255,255,.94); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
     .header-row { display: flex; align-items: center; gap: 14px; height: 72px; }
     .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.2rem; letter-spacing: -.02em; flex-shrink: 0; }
     .logo-mark { width: 36px; height: 36px; border-radius: 11px; background: var(--brand); display: grid; place-items: center; }
@@ -112,38 +123,42 @@
       flex: 1; display: none; align-items: center; height: 46px; background: var(--bg);
       border: 1px solid var(--line); border-radius: 999px; padding: 0 6px 0 16px; gap: 10px;
     }
-    .search select { border: 0; background: transparent; font-weight: 600; font-size: .85rem; padding-right: 4px; }
+    .search:focus-within { border-color: var(--mint-dark); background: #fff; }
+    .search select { border: 0; background: transparent; font-weight: 600; font-size: .85rem; padding-right: 4px; outline: none; }
     .search .divider { width: 1px; height: 22px; background: var(--line); }
     .search input { flex: 1; border: 0; background: transparent; outline: none; font-size: .9rem; min-width: 0; }
     .search button { width: 36px; height: 36px; border-radius: 50%; background: var(--brand); color: #fff; display: grid; place-items: center; }
-    .location { display: none; align-items: center; gap: 10px; font-size: .78rem; color: var(--muted); }
+    .location { display: none; align-items: center; gap: 10px; font-size: .78rem; color: var(--muted); text-align: left; }
     .location .pin { width: 38px; height: 38px; border-radius: 50%; background: #fff1ec; color: var(--coral); display: grid; place-items: center; }
     .location b { display: block; color: var(--ink); font-size: .9rem; }
+    .location select { border: 0; background: transparent; font-weight: 700; color: var(--ink); font-size: .9rem; padding: 0; outline: none; cursor: pointer; }
     .icon-btn { position: relative; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; background: #fff; flex-shrink: 0; }
     .icon-btn:hover { border-color: var(--brand); }
-    .cart-count {
+    .count {
       position: absolute; top: -4px; right: -4px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 999px;
       background: var(--coral); color: #fff; font-size: .7rem; font-weight: 800; display: grid; place-items: center;
       transform: scale(0); transition: transform .2s;
     }
-    .cart-count.show { transform: scale(1); }
-    .cart-count.bump { animation: bump .35s; }
+    .count.show { transform: scale(1); }
+    .count.bump { animation: bump .35s; }
     @keyframes bump { 50% { transform: scale(1.35); } }
-    .account { display: none; align-items: center; gap: 10px; font-size: .78rem; color: var(--muted); }
-    .account .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--mint-tint); color: var(--brand); font-weight: 800; display: grid; place-items: center; }
-    .account b { display: block; color: var(--ink); font-size: .9rem; }
-    .header-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
-    @media (min-width: 900px) { .search { display: flex; } .header-right { margin-left: 0; } }
-    @media (min-width: 1100px) { .location, .account { display: flex; } }
+    .header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+    .mobile-search-btn { display: grid; }
+    @media (min-width: 900px) { .search { display: flex; } .header-right { margin-left: 0; } .mobile-search-btn { display: none; } }
+    @media (min-width: 1100px) { .location { display: flex; } }
+    .mobile-search { display: none; padding-bottom: 12px; }
+    .mobile-search.open { display: block; }
+    .mobile-search .search { display: flex; }
+    @media (min-width: 900px) { .mobile-search { display: none !important; } }
 
     .cat-nav { display: flex; gap: 8px; overflow-x: auto; padding-block: 10px 14px; scrollbar-width: none; }
     .cat-nav::-webkit-scrollbar { display: none; }
-    .cat-nav a {
+    .cat-nav a, .cat-nav button {
       flex-shrink: 0; height: 38px; padding: 0 16px; border-radius: 999px; background: var(--bg);
       display: inline-flex; align-items: center; gap: 6px; font-size: .85rem; font-weight: 600; color: var(--ink-soft);
       transition: background .2s, color .2s;
     }
-    .cat-nav a:hover { background: var(--brand); color: #fff; }
+    .cat-nav a:hover, .cat-nav button:hover { background: var(--brand); color: #fff; }
     .cat-nav .dot { width: 7px; height: 7px; border-radius: 50%; }
 
     /* ---------- Hero ---------- */
@@ -165,24 +180,28 @@
     .hero h1 em { font-style: normal; color: var(--mint); }
     .hero-lead { color: #cfe9e1; font-size: 1.05rem; max-width: 470px; margin-top: 18px; }
     .hero-ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
-    .hero-stats { display: flex; gap: 28px; margin-top: 34px; flex-wrap: wrap; }
+    .hero-stats { display: flex; gap: 28px; margin-top: 34px; flex-wrap: wrap; padding-bottom: 8px; }
     .hero-stats b { display: block; font-size: 1.4rem; }
     .hero-stats span { font-size: .8rem; color: #9fc7bb; }
 
-    /* Hero illustration */
-    .hero-art { position: relative; min-height: 360px; align-self: end; }
-    .hero-art svg.scene { width: 100%; height: auto; max-width: 520px; margin-left: auto; }
+    .hero-art { position: relative; align-self: end; padding: 10px 0 28px; }
+    .hero-photo {
+      position: relative; margin-left: auto; width: min(100%, 470px); aspect-ratio: 4 / 4.2;
+      border-radius: 200px 200px 28px 28px; overflow: hidden; background: #e9efee;
+      box-shadow: 0 30px 60px -30px rgba(0,0,0,.55); border: 6px solid rgba(255,255,255,.12);
+    }
+    .hero-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 20%; }
     .float {
       position: absolute; background: #fff; color: var(--ink); border-radius: 16px; padding: 12px 14px;
       box-shadow: var(--shadow); display: flex; align-items: center; gap: 10px; font-size: .8rem;
-      animation: floaty 5s ease-in-out infinite;
+      animation: floaty 5s ease-in-out infinite; z-index: 1;
     }
     .float b { display: block; font-size: .88rem; }
     .float .ic { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; flex-shrink: 0; }
-    .float-1 { top: 14%; left: 0; }
-    .float-2 { bottom: 26%; right: 0; animation-delay: -2.5s; }
+    .float-1 { top: 22%; left: 0; }
+    .float-2 { bottom: 22%; right: -6px; animation-delay: -2.5s; }
     @keyframes floaty { 50% { transform: translateY(-8px); } }
-    @media (max-width: 520px) { .float-1 { left: -6px; top: 4%; } .float-2 { right: -6px; } }
+    @media (min-width: 960px) { .float-1 { left: 2%; } }
 
     /* Product finder bar */
     .finder {
@@ -190,7 +209,7 @@
       padding: 16px; display: grid; gap: 10px; margin: 0 -8px 24px; box-shadow: var(--shadow);
     }
     @media (min-width: 860px) {
-      .finder { grid-template-columns: auto 1fr 1fr auto 1fr auto; align-items: center; margin: -10px 0 32px; padding: 14px 14px 14px 22px; }
+      .finder { grid-template-columns: auto 1fr 1fr auto 1fr auto; align-items: center; margin: 0 0 32px; padding: 14px 14px 14px 22px; }
     }
     .finder label.title { font-weight: 800; font-size: .95rem; }
     .finder select, .finder input {
@@ -202,12 +221,14 @@
     /* ---------- Categories ---------- */
     .cats { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 18px; }
     .cat { text-align: center; }
+    .cat button { width: 100%; }
     .cat .circle {
-      aspect-ratio: 1; border-radius: 50%; background: #fff; border: 1px solid var(--line);
-      display: grid; place-items: center; transition: transform .25s, box-shadow .25s, border-color .25s;
+      aspect-ratio: 1; border-radius: 50%; overflow: hidden; background: #fff; border: 3px solid #fff;
+      box-shadow: 0 0 0 1px var(--line); transition: transform .25s, box-shadow .25s;
     }
-    .cat .circle svg { width: 58%; }
-    .cat:hover .circle { transform: translateY(-4px); box-shadow: var(--shadow); border-color: var(--mint); }
+    .cat .circle img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
+    .cat button:hover .circle { transform: translateY(-4px); box-shadow: 0 0 0 2px var(--mint), var(--shadow); }
+    .cat button:hover .circle img { transform: scale(1.08); }
     .cat h3 { font-size: .92rem; font-weight: 700; margin-top: 12px; }
     .cat p { font-size: .75rem; color: var(--muted); }
 
@@ -215,23 +236,26 @@
     .services { display: grid; gap: 20px; }
     @media (min-width: 860px) { .services { grid-template-columns: 1fr 1fr; } }
     .service {
-      position: relative; overflow: hidden; border-radius: 24px; padding: 32px; min-height: 250px;
-      display: flex; flex-direction: column; justify-content: space-between; gap: 22px;
+      position: relative; overflow: hidden; border-radius: 24px; min-height: 280px;
+      display: grid; grid-template-columns: 1fr; color: var(--ink);
     }
+    @media (min-width: 560px) { .service { grid-template-columns: 1.15fr 1fr; } }
     .service.lab { background: linear-gradient(135deg, #e6f1ff, #d4e6ff); }
     .service.doc { background: linear-gradient(135deg, #fff6e2, #ffeccc); }
+    .service .body { padding: 30px; display: flex; flex-direction: column; justify-content: space-between; gap: 18px; }
     .service .kicker { font-size: .78rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
     .service.lab .kicker { color: #2b63c6; }
     .service.doc .kicker { color: #b7791f; }
-    .service h3 { font-size: clamp(1.4rem, 2.4vw, 1.85rem); font-weight: 800; letter-spacing: -.02em; margin-top: 8px; max-width: 300px; }
-    .service p { color: var(--ink-soft); margin-top: 6px; max-width: 290px; }
+    .service h3 { font-size: clamp(1.35rem, 2.3vw, 1.75rem); font-weight: 800; letter-spacing: -.02em; margin-top: 8px; }
+    .service p { color: var(--ink-soft); margin-top: 6px; font-size: .95rem; }
     .service ul { display: flex; flex-wrap: wrap; gap: 8px; }
     .service li { background: rgba(255,255,255,.75); border-radius: 999px; padding: 6px 12px; font-size: .78rem; font-weight: 600; }
-    .service .art { position: absolute; right: -10px; bottom: -10px; width: 46%; max-width: 230px; opacity: .95; }
-    @media (max-width: 520px) { .service .art { width: 38%; opacity: .5; } }
+    .service .photo { min-height: 200px; }
+    .service .photo img { width: 100%; height: 100%; object-fit: cover; }
+    @media (min-width: 560px) { .service .photo { border-radius: 0; } }
 
     /* ---------- Products ---------- */
-    .tabs { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin-bottom: 22px; }
+    .tabs { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin-bottom: 14px; }
     .tabs::-webkit-scrollbar { display: none; }
     .tab {
       flex-shrink: 0; height: 38px; padding: 0 16px; border-radius: 999px; border: 1.5px solid var(--line);
@@ -239,29 +263,36 @@
     }
     .tab:hover { border-color: var(--brand); }
     .tab[aria-selected="true"] { background: var(--brand); border-color: var(--brand); color: #fff; }
+    .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; font-size: .88rem; color: var(--muted); }
+    .toolbar select { height: 38px; border: 1.5px solid var(--line); border-radius: 999px; padding: 0 14px; background: #fff; font-weight: 600; color: var(--ink); outline: none; }
+    .active-filter { display: inline-flex; align-items: center; gap: 6px; background: var(--mint-tint); color: var(--brand); padding: 4px 6px 4px 12px; border-radius: 999px; font-weight: 600; }
+    .active-filter button { width: 22px; height: 22px; border-radius: 50%; background: #fff; display: grid; place-items: center; font-size: .8rem; }
 
     .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
     @media (min-width: 720px) { .grid { grid-template-columns: repeat(3, 1fr); gap: 18px; } }
     @media (min-width: 1040px) { .grid { grid-template-columns: repeat(4, 1fr); } }
     .card {
-      background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 12px;
+      background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 10px;
       display: flex; flex-direction: column; transition: transform .25s, box-shadow .25s; animation: fadeIn .4s both;
     }
     .card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } }
-    .card .thumb { position: relative; border-radius: 13px; background: var(--bg); aspect-ratio: 1 / .9; display: grid; place-items: center; }
-    .card .thumb svg { width: 62%; height: 80%; }
-    .badge { position: absolute; top: 10px; left: 10px; font-size: .7rem; font-weight: 800; padding: 4px 9px; border-radius: 999px; color: #fff; background: var(--coral); }
+    .card .thumb { position: relative; border-radius: 13px; overflow: hidden; aspect-ratio: 1 / .85; background: var(--bg); }
+    .card .thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .45s; }
+    .card:hover .thumb img { transform: scale(1.06); }
+    .badge { position: absolute; top: 10px; left: 10px; font-size: .7rem; font-weight: 800; padding: 4px 9px; border-radius: 999px; color: #fff; background: var(--coral); z-index: 1; }
     .badge.new { background: var(--mint-dark); }
-    .wish { position: absolute; top: 8px; right: 8px; width: 34px; height: 34px; border-radius: 50%; background: #fff; display: grid; place-items: center; color: var(--muted); transition: color .2s, transform .2s; }
+    .badge.rx { left: auto; right: 52px; background: #2b63c6; }
+    .wish { position: absolute; top: 8px; right: 8px; width: 34px; height: 34px; border-radius: 50%; background: #fff; display: grid; place-items: center; color: var(--muted); transition: color .2s, transform .2s; z-index: 1; }
     .wish:hover { transform: scale(1.08); }
     .wish[aria-pressed="true"] { color: var(--coral); }
     .wish[aria-pressed="true"] svg { fill: currentColor; }
-    .card .meta { font-size: .72rem; color: var(--muted); margin-top: 12px; text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
-    .card h3 { font-size: .95rem; font-weight: 700; margin-top: 4px; line-height: 1.3; min-height: 2.6em; }
+    .card .info { padding: 4px 4px 2px; display: flex; flex-direction: column; flex: 1; }
+    .card .meta { font-size: .7rem; color: var(--muted); margin-top: 10px; text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
+    .card h3 { font-size: .95rem; font-weight: 700; margin-top: 4px; line-height: 1.3; }
+    .card .pack { font-size: .78rem; color: var(--muted); margin-top: 2px; }
     .rating { font-size: .78rem; color: var(--ink-soft); margin-top: 6px; }
-    .rating .stars { font-size: .8rem; }
-    .price-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .price-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 12px; flex-wrap: wrap; }
     .price b { font-size: 1.1rem; }
     .price s { color: var(--muted); font-size: .8rem; margin-left: 4px; }
     .add {
@@ -269,7 +300,9 @@
       font-size: .82rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; transition: background .2s, color .2s;
     }
     .add:hover { background: var(--brand); color: #fff; }
-    .add.added { background: var(--mint); color: var(--brand); }
+    .stepper { display: inline-flex; align-items: center; height: 38px; border-radius: 999px; background: var(--brand); color: #fff; }
+    .stepper button { width: 34px; height: 38px; color: #fff; font-size: 1.1rem; font-weight: 700; }
+    .stepper span { min-width: 22px; text-align: center; font-weight: 800; font-size: .9rem; }
     .empty { grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--muted); background: #fff; border-radius: var(--radius); border: 1px dashed var(--line); }
 
     /* ---------- Brand band ---------- */
@@ -284,14 +317,19 @@
     .brand-band .tag { display: inline-block; background: rgba(255,255,255,.12); border-radius: 999px; padding: 6px 12px; font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
     .brand-band .right { padding: 36px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; align-content: center; }
     @media (max-width: 560px) { .brand-band .right { grid-template-columns: 1fr 1fr; padding-top: 0; } }
-    .mini { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); border-radius: 18px; padding: 14px; text-align: center; transition: background .2s; }
+    .mini { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); border-radius: 18px; padding: 10px; text-align: left; transition: background .2s; color: #fff; }
     .mini:hover { background: rgba(255,255,255,.14); }
-    .mini .pic { background: #fff; border-radius: 12px; aspect-ratio: 1; display: grid; place-items: center; }
-    .mini .pic svg { width: 60%; height: 80%; }
-    .mini b { display: block; margin-top: 10px; font-size: .9rem; }
+    .mini img { border-radius: 12px; aspect-ratio: 1; width: 100%; object-fit: cover; }
+    .mini b { display: block; margin-top: 10px; font-size: .88rem; line-height: 1.3; }
     .mini span { font-size: .78rem; color: #9fc7bb; }
 
     /* ---------- Why us ---------- */
+    .why-wrap { display: grid; gap: 20px; }
+    @media (min-width: 960px) { .why-wrap { grid-template-columns: 1fr 1.4fr; align-items: stretch; } }
+    .why-photo { border-radius: 24px; overflow: hidden; min-height: 260px; position: relative; }
+    .why-photo img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+    .why-photo .caption { position: absolute; left: 16px; bottom: 16px; right: 16px; background: rgba(255,255,255,.94); border-radius: 14px; padding: 12px 14px; font-size: .85rem; }
+    .why-photo .caption b { display: block; }
     .why { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
     .why-item { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; }
     .why-item .ic { width: 46px; height: 46px; border-radius: 14px; background: var(--mint-tint); color: var(--brand); display: grid; place-items: center; }
@@ -311,6 +349,15 @@
     .checks li { display: flex; align-items: center; gap: 8px; }
     .checks li::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 0 4px rgba(55,211,155,.2); }
 
+    /* ---------- Newsletter ---------- */
+    .newsletter { background: #fff; border: 1px solid var(--line); border-radius: 24px; padding: 28px; display: grid; gap: 16px; align-items: center; }
+    @media (min-width: 860px) { .newsletter { grid-template-columns: 1fr 1fr; padding: 32px 36px; } }
+    .newsletter h2 { font-size: 1.4rem; font-weight: 800; letter-spacing: -.02em; }
+    .newsletter p { color: var(--muted); font-size: .92rem; margin-top: 4px; }
+    .newsletter form { display: flex; gap: 10px; flex-wrap: wrap; }
+    .newsletter input { flex: 1; min-width: 200px; height: 48px; border: 1.5px solid var(--line); border-radius: 999px; padding: 0 18px; outline: none; }
+    .newsletter input:focus { border-color: var(--mint-dark); }
+
     /* ---------- Footer ---------- */
     footer { background: #0c211d; color: #9fb8b1; margin-top: 56px; }
     .foot { display: grid; gap: 32px; padding-block: 48px 32px; grid-template-columns: repeat(2, 1fr); }
@@ -319,20 +366,108 @@
     @media (min-width: 860px) { .foot .about { grid-column: auto; } }
     .foot h4 { color: #fff; font-size: .95rem; margin-bottom: 14px; }
     .foot li + li { margin-top: 8px; }
-    .foot a:hover { color: var(--mint); }
+    .foot a:hover, .foot button:hover { color: var(--mint); }
     .foot .logo { color: #fff; }
-    .foot .about p { margin-top: 14px; max-width: 320px; font-size: .9rem; }
+    .foot .about p { margin-top: 14px; max-width: 340px; font-size: .9rem; }
     .copyright { border-top: 1px solid rgba(255,255,255,.08); padding-block: 18px; font-size: .8rem; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .copyright a { color: var(--mint); }
+
+    /* ---------- Overlay, drawer & modals ---------- */
+    .overlay { position: fixed; inset: 0; background: rgba(10, 25, 22, .5); z-index: 70; opacity: 0; visibility: hidden; transition: opacity .25s, visibility .25s; }
+    .overlay.show { opacity: 1; visibility: visible; }
+    .drawer {
+      position: fixed; top: 0; right: 0; bottom: 0; width: min(420px, 100%); background: #fff; z-index: 80;
+      transform: translateX(100%); transition: transform .3s ease; display: flex; flex-direction: column;
+      box-shadow: -20px 0 50px -20px rgba(0,0,0,.3);
+    }
+    .drawer.open { transform: none; }
+    .drawer-head { display: flex; align-items: center; justify-content: space-between; padding: 20px 22px; border-bottom: 1px solid var(--line); }
+    .drawer-head h2 { font-size: 1.2rem; font-weight: 800; }
+    .close { width: 38px; height: 38px; border-radius: 50%; background: var(--bg); display: grid; place-items: center; }
+    .close:hover { background: var(--line); }
+    .drawer-body { flex: 1; overflow-y: auto; padding: 16px 22px; }
+    .ship-bar { background: var(--mint-tint); border-radius: 12px; padding: 12px 14px; font-size: .85rem; color: var(--brand); margin-bottom: 14px; }
+    .ship-bar .track { height: 6px; background: #fff; border-radius: 999px; margin-top: 8px; overflow: hidden; }
+    .ship-bar .fill { height: 100%; background: var(--mint-dark); border-radius: 999px; transition: width .3s; }
+    .line-item { display: grid; grid-template-columns: 64px 1fr auto; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
+    .line-item img { width: 64px; height: 64px; border-radius: 12px; object-fit: cover; }
+    .line-item h3 { font-size: .9rem; font-weight: 700; line-height: 1.3; }
+    .line-item .sub { font-size: .8rem; color: var(--muted); }
+    .line-item .right { text-align: right; display: grid; gap: 6px; justify-items: end; }
+    .qty { display: inline-flex; align-items: center; border: 1.5px solid var(--line); border-radius: 999px; height: 32px; }
+    .qty button { width: 28px; height: 30px; font-weight: 800; color: var(--brand); }
+    .qty span { min-width: 20px; text-align: center; font-size: .85rem; font-weight: 700; }
+    .remove { font-size: .75rem; color: var(--danger); font-weight: 600; }
+    .drawer-foot { border-top: 1px solid var(--line); padding: 18px 22px; display: grid; gap: 10px; }
+    .sum-row { display: flex; justify-content: space-between; font-size: .9rem; color: var(--ink-soft); }
+    .sum-row.total { font-size: 1.1rem; font-weight: 800; color: var(--ink); }
+    .sum-row .save { color: var(--mint-dark); font-weight: 700; }
+    .cart-empty { text-align: center; padding: 48px 10px; color: var(--muted); }
+    .cart-empty .ic { width: 72px; height: 72px; border-radius: 50%; background: var(--mint-tint); color: var(--brand); display: grid; place-items: center; margin: 0 auto 14px; }
+
+    .modal {
+      position: fixed; z-index: 90; left: 50%; top: 50%; width: min(560px, calc(100% - 24px)); max-height: calc(100vh - 32px);
+      overflow-y: auto; background: #fff; border-radius: 22px; transform: translate(-50%, -46%) scale(.98);
+      opacity: 0; visibility: hidden; transition: transform .25s, opacity .25s, visibility .25s; box-shadow: 0 40px 80px -30px rgba(0,0,0,.45);
+    }
+    .modal.open { opacity: 1; visibility: visible; transform: translate(-50%, -50%); }
+    .modal-head { display: flex; align-items: start; justify-content: space-between; gap: 12px; padding: 24px 24px 6px; }
+    .modal-head h2 { font-size: 1.35rem; font-weight: 800; letter-spacing: -.02em; }
+    .modal-head p { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+    .modal-body { padding: 16px 24px 24px; }
+    .form-grid { display: grid; gap: 14px; }
+    @media (min-width: 520px) { .form-grid.two { grid-template-columns: 1fr 1fr; } }
+    .field label { display: block; font-size: .8rem; font-weight: 700; color: var(--ink-soft); margin-bottom: 6px; }
+    .field input, .field select, .field textarea {
+      width: 100%; height: 46px; border: 1.5px solid var(--line); border-radius: 12px; padding: 0 14px; background: #fff; outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .field textarea { height: 84px; padding: 12px 14px; resize: vertical; }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--mint-dark); box-shadow: 0 0 0 4px rgba(55,211,155,.15); }
+    .field .err { display: none; color: var(--danger); font-size: .76rem; margin-top: 4px; }
+    .field.invalid input, .field.invalid select, .field.invalid textarea { border-color: var(--danger); }
+    .field.invalid .err { display: block; }
+    .full { grid-column: 1 / -1; }
+    .radio-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+    .radio-cards label { border: 1.5px solid var(--line); border-radius: 12px; padding: 12px; display: flex; gap: 10px; align-items: center; cursor: pointer; font-weight: 600; font-size: .88rem; }
+    .radio-cards input { accent-color: var(--brand); }
+    .radio-cards label:has(input:checked) { border-color: var(--brand); background: var(--mint-tint); }
+    .slots { display: flex; flex-wrap: wrap; gap: 8px; }
+    .slots label { position: relative; }
+    .slots input { position: absolute; opacity: 0; }
+    .slots span { display: inline-block; padding: 8px 12px; border: 1.5px solid var(--line); border-radius: 999px; font-size: .82rem; font-weight: 600; cursor: pointer; }
+    .slots input:checked + span { background: var(--brand); color: #fff; border-color: var(--brand); }
+    .slots input:focus-visible + span { outline: 2px solid var(--mint-dark); outline-offset: 2px; }
+    .dropzone {
+      border: 2px dashed var(--line); border-radius: 16px; padding: 26px; text-align: center; color: var(--muted); cursor: pointer;
+      transition: border-color .2s, background .2s; display: block;
+    }
+    .dropzone:hover, .dropzone.drag { border-color: var(--mint-dark); background: var(--mint-tint); }
+    .dropzone b { color: var(--brand); }
+    .dropzone input { display: none; }
+    .preview { display: none; align-items: center; gap: 12px; margin-top: 12px; padding: 10px; border: 1px solid var(--line); border-radius: 12px; }
+    .preview.show { display: flex; }
+    .preview img, .preview .file-ic { width: 56px; height: 56px; border-radius: 10px; object-fit: cover; background: var(--bg); display: grid; place-items: center; font-weight: 800; color: var(--brand); font-size: .75rem; flex-shrink: 0; }
+    .preview .name { font-size: .85rem; font-weight: 600; word-break: break-all; }
+    .order-summary { background: var(--bg); border-radius: 14px; padding: 14px 16px; display: grid; gap: 6px; margin-top: 16px; }
+    .success { text-align: center; padding: 8px 4px 4px; }
+    .success .tick-big { width: 76px; height: 76px; border-radius: 50%; background: var(--mint-tint); color: var(--mint-dark); display: grid; place-items: center; margin: 0 auto 16px; }
+    .success h3 { font-size: 1.35rem; font-weight: 800; }
+    .success p { color: var(--muted); margin-top: 6px; }
+    .success .ref { display: inline-block; margin-top: 14px; background: var(--bg); padding: 8px 14px; border-radius: 999px; font-weight: 700; letter-spacing: .04em; }
+    .note { font-size: .78rem; color: var(--muted); margin-top: 12px; text-align: center; }
 
     /* ---------- Toast ---------- */
     .toast {
-      position: fixed; left: 50%; bottom: 24px; z-index: 60; transform: translate(-50%, 150%); opacity: 0;
+      position: fixed; left: 50%; bottom: 24px; z-index: 100; transform: translate(-50%, 150%); opacity: 0;
       background: var(--ink); color: #fff; padding: 12px 18px; border-radius: 12px; font-size: .9rem;
       transition: transform .3s, opacity .3s; box-shadow: var(--shadow); max-width: calc(100vw - 32px);
       display: flex; align-items: center; gap: 10px;
     }
     .toast.show { transform: translate(-50%, 0); opacity: 1; }
-    .toast .tick { width: 22px; height: 22px; border-radius: 50%; background: var(--mint); color: var(--brand); display: grid; place-items: center; font-weight: 900; font-size: .75rem; }
+    body.locked .toast { bottom: 110px; }
+    .toast .tick { width: 22px; height: 22px; border-radius: 50%; background: var(--mint); color: var(--brand); display: grid; place-items: center; font-weight: 900; font-size: .75rem; flex-shrink: 0; }
+    .toast button { color: var(--mint); font-weight: 700; margin-left: 6px; }
 
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
@@ -342,13 +477,13 @@
 </head>
 
 <body>
-  <a href="#main" class="sr-only">Skip to content</a>
+  <a href="#main" class="skip">Skip to content</a>
 
   <!-- Top strip -->
   <div class="strip">
     <div class="wrap">
       <p>🚚 <b>Free delivery</b> on orders above ₹499 · Delivered within 24 hours</p>
-      <p class="hide-sm">Need help? Call <b>1800-000-0000</b> (demo)</p>
+      <p class="hide-sm">Pharmacist helpline: <b>1800-000-0000</b> (demo)</p>
     </div>
   </div>
 
@@ -361,43 +496,60 @@
           Remedy Lane
         </a>
 
-        <form class="search" role="search" id="header-search">
+        <form class="search" role="search" data-search>
           <label class="sr-only" for="search-cat">Category</label>
-          <select id="search-cat">
+          <select id="search-cat" data-cat-select>
             <option value="all">All Categories</option>
           </select>
           <span class="divider"></span>
-          <label class="sr-only" for="search-input">Search</label>
-          <input id="search-input" type="search" placeholder="Search medicines, vitamins, skincare…" />
+          <label class="sr-only" for="search-input">Search products</label>
+          <input id="search-input" type="search" placeholder="Search medicines, vitamins, skincare…" autocomplete="off" />
           <button type="submit" aria-label="Search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
         </form>
 
         <div class="header-right">
           <div class="location">
             <span class="pin"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.1-7-11.5A7 7 0 0 1 19 9.5C19 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span>
-            <span>Deliver to<b>Chandigarh</b></span>
+            <span>Deliver to
+              <label class="sr-only" for="city">Delivery city</label>
+              <select id="city"><option>Chandigarh</option><option>Mohali</option><option>Panchkula</option></select>
+            </span>
           </div>
-          <button class="icon-btn" id="cart-btn" aria-label="Cart, 0 items">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6"/><circle cx="10" cy="20" r="1.3"/><circle cx="17" cy="20" r="1.3"/></svg>
-            <span class="cart-count" id="cart-count">0</span>
+          <button class="icon-btn mobile-search-btn" id="mobile-search-btn" aria-label="Open search" aria-expanded="false" aria-controls="mobile-search">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
           </button>
-          <div class="account">
-            <span class="avatar">G</span>
-            <span>Welcome<b>Guest</b></span>
-          </div>
+          <button class="icon-btn" id="wish-btn" aria-label="Wishlist, 0 items">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+            <span class="count" id="wish-count">0</span>
+          </button>
+          <button class="icon-btn" id="cart-btn" aria-label="Open cart, 0 items" aria-controls="cart">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6"/><circle cx="10" cy="20" r="1.3"/><circle cx="17" cy="20" r="1.3"/></svg>
+            <span class="count" id="cart-count">0</span>
+          </button>
         </div>
+      </div>
+
+      <div class="mobile-search" id="mobile-search">
+        <form class="search" role="search" data-search>
+          <label class="sr-only" for="m-search-cat">Category</label>
+          <select id="m-search-cat" data-cat-select><option value="all">All</option></select>
+          <span class="divider"></span>
+          <label class="sr-only" for="m-search-input">Search products</label>
+          <input id="m-search-input" type="search" placeholder="Search products…" autocomplete="off" />
+          <button type="submit" aria-label="Search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
+        </form>
       </div>
 
       <nav class="cat-nav" aria-label="Quick links">
         <a href="#categories">Shop by Category</a>
-        <a href="#best-sellers" data-quick="under">Under ₹500</a>
-        <a href="#best-sellers" data-quick="new"><span class="dot" style="background:var(--mint-dark)"></span>New Arrivals</a>
-        <a href="#best-sellers"><span class="dot" style="background:#2b63c6"></span>Best Selling</a>
-        <a href="#best-sellers" data-quick="offer"><span class="dot" style="background:var(--coral)"></span>Offers</a>
-        <a href="#best-sellers" data-quick="skin">Personal Care</a>
-        <a href="#best-sellers" data-quick="vitamins">Vitamins & Supplements</a>
-        <a href="#services">Lab Tests</a>
-        <a href="#doctor">Consult a Doctor</a>
+        <button type="button" data-filter="under">Under ₹500</button>
+        <button type="button" data-filter="new"><span class="dot" style="background:var(--mint-dark)"></span>New Arrivals</button>
+        <button type="button" data-filter="all" data-sort="popular"><span class="dot" style="background:#2b63c6"></span>Best Selling</button>
+        <button type="button" data-filter="offer"><span class="dot" style="background:var(--coral)"></span>Offers 20%+</button>
+        <button type="button" data-filter="skin">Skin Care</button>
+        <button type="button" data-filter="vitamins">Vitamins & Supplements</button>
+        <button type="button" data-open="lab">Book Lab Test</button>
+        <button type="button" data-open="consult">Consult a Doctor</button>
       </nav>
     </div>
   </header>
@@ -421,7 +573,7 @@
                 <a href="#best-sellers" class="btn btn-mint">Order Medicines
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
                 </a>
-                <button type="button" class="btn btn-ghost" id="upload-rx">Upload Prescription</button>
+                <button type="button" class="btn btn-ghost" data-open="rx">Upload Prescription</button>
               </div>
               <div class="hero-stats">
                 <div><b>10k+</b><span>Products</span></div>
@@ -430,55 +582,21 @@
               </div>
             </div>
 
-            <!-- Illustration: original SVG scene -->
-            <div class="hero-art" aria-hidden="true">
-              <svg class="scene" viewBox="0 0 520 420">
-                <circle cx="300" cy="230" r="180" fill="#1f6b5d" opacity=".55"/>
-                <circle cx="300" cy="230" r="128" fill="#26806f" opacity=".5"/>
-                <!-- Box -->
-                <g transform="translate(150 230)">
-                  <path d="M0 40 L110 0 L220 40 L110 80 Z" fill="#f2c48d"/>
-                  <path d="M0 40 L110 80 L110 190 L0 150 Z" fill="#d99a5b"/>
-                  <path d="M220 40 L110 80 L110 190 L220 150 Z" fill="#e8b073"/>
-                  <path d="M55 20 L165 60 L165 92 L150 86 L150 66 L40 26 Z" fill="#fff" opacity=".55"/>
-                  <rect x="130" y="110" width="66" height="34" rx="6" transform="skewY(-20) translate(0 48)" fill="#fff" opacity=".9"/>
-                </g>
-                <!-- Big bottle -->
-                <g transform="translate(300 60)">
-                  <rect x="22" y="0" width="76" height="34" rx="8" fill="#37d39b"/>
-                  <rect x="10" y="30" width="100" height="170" rx="26" fill="#ffffff"/>
-                  <rect x="10" y="84" width="100" height="70" fill="#123a33"/>
-                  <path d="M60 100v38M41 119h38" stroke="#37d39b" stroke-width="10" stroke-linecap="round"/>
-                  <rect x="22" y="44" width="10" height="34" rx="5" fill="#e3ebe8"/>
-                </g>
-                <!-- Tub -->
-                <g transform="translate(110 150)">
-                  <rect x="0" y="0" width="86" height="22" rx="7" fill="#ff7a59"/>
-                  <rect x="4" y="18" width="78" height="92" rx="14" fill="#fff6e2"/>
-                  <rect x="4" y="46" width="78" height="38" fill="#ffc845"/>
-                  <text x="43" y="70" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-weight="800" font-size="13" fill="#10231f">VIT C</text>
-                </g>
-                <!-- Pills -->
-                <g transform="translate(410 300) rotate(-30)">
-                  <rect width="58" height="24" rx="12" fill="#fff"/><rect width="29" height="24" rx="12" fill="#ff7a59"/><rect x="17" width="12" height="24" fill="#ff7a59"/>
-                </g>
-                <g transform="translate(90 330) rotate(20)">
-                  <rect width="50" height="20" rx="10" fill="#fff"/><rect width="25" height="20" rx="10" fill="#37d39b"/><rect x="14" width="11" height="20" fill="#37d39b"/>
-                </g>
-                <circle cx="460" cy="140" r="10" fill="#ffc845"/>
-                <circle cx="80" cy="250" r="7" fill="#fff" opacity=".7"/>
-              </svg>
-              <div class="float float-1">
+            <div class="hero-art">
+              <div class="hero-photo">
+                <img src="images/hero-doctor.jpg" alt="Smiling doctor in a white coat holding a tablet" width="960" height="640" fetchpriority="high" />
+              </div>
+              <div class="float float-1" aria-hidden="true">
                 <span class="ic" style="background:var(--mint-tint);color:var(--brand)">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12l5 5L20 7"/></svg>
                 </span>
                 <span><b>Order delivered</b>Sector 17 · 2 hrs ago</span>
               </div>
-              <div class="float float-2">
+              <div class="float float-2" aria-hidden="true">
                 <span class="ic" style="background:#fff1ec;color:var(--coral)">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
                 </span>
-                <span><b>Arriving today</b>Track in real time</span>
+                <span><b>Doctor online</b>Avg. wait 12 min</span>
               </div>
             </div>
           </div>
@@ -486,10 +604,10 @@
           <!-- Product finder -->
           <form class="finder" id="finder">
             <label class="title" for="finder-cat">Find a product</label>
-            <select id="finder-cat" aria-label="Category"><option value="all">All Categories</option></select>
+            <select id="finder-cat" aria-label="Category" data-cat-select><option value="all">All Categories</option></select>
             <select id="finder-brand" aria-label="Brand"><option value="all">All Brands</option></select>
             <span class="or">or</span>
-            <input id="finder-sku" type="text" placeholder="Enter product name" aria-label="Product name" />
+            <input id="finder-name" type="text" placeholder="Enter product name" aria-label="Product name" />
             <button type="submit" class="btn btn-dark">Shop Now</button>
           </form>
         </div>
@@ -504,7 +622,7 @@
             <h2>Shop by Category</h2>
             <p>Everything your family needs, sorted.</p>
           </div>
-          <a href="#best-sellers" class="link-arrow">Shop all products →</a>
+          <button type="button" class="link-arrow" data-filter="all">Shop all products →</button>
         </div>
         <ul class="cats" id="cats"></ul>
       </div>
@@ -514,42 +632,33 @@
     <section id="services" style="padding-top:0">
       <div class="wrap services">
         <article class="service lab">
-          <div>
-            <p class="kicker">Lab Tests</p>
-            <h3>Book lab tests from home</h3>
-            <p>Certified technicians collect samples at your door. Digital reports in 24–48 hours.</p>
+          <div class="body">
+            <div>
+              <p class="kicker">Lab Tests</p>
+              <h3>Book lab tests from home</h3>
+              <p>Certified technicians collect samples at your door. Digital reports in 24–48 hours.</p>
+            </div>
+            <ul><li>Full body checkup</li><li>Thyroid</li><li>HbA1c</li></ul>
+            <button type="button" class="btn btn-outline" style="align-self:flex-start" data-open="lab">Book a Test</button>
           </div>
-          <ul><li>Full body checkup</li><li>Thyroid</li><li>Diabetes (HbA1c)</li></ul>
-          <a href="#" class="btn btn-outline" style="align-self:flex-start" data-toast="Lab test booking opens soon (demo)">Browse Tests</a>
-          <svg class="art" viewBox="0 0 200 200" aria-hidden="true">
-            <rect x="70" y="20" width="44" height="140" rx="22" fill="#fff"/>
-            <rect x="70" y="90" width="44" height="70" rx="0" fill="#2b63c6" opacity=".85"/>
-            <rect x="64" y="12" width="56" height="18" rx="6" fill="#2b63c6"/>
-            <rect x="126" y="60" width="34" height="110" rx="17" fill="#fff"/>
-            <rect x="126" y="120" width="34" height="50" fill="#ff7a59" opacity=".85"/>
-            <rect x="121" y="52" width="44" height="14" rx="5" fill="#ff7a59"/>
-          </svg>
+          <div class="photo"><img src="images/lab-nurse.jpg" alt="Nurse in scrubs reviewing patient details on a tablet" loading="lazy" width="720" height="480" /></div>
         </article>
         <article class="service doc" id="doctor">
-          <div>
-            <p class="kicker">Online Consultation</p>
-            <h3>Video consultation from ₹199</h3>
-            <p>Talk to verified doctors in 15 minutes — prescriptions sent straight to your phone.</p>
+          <div class="body">
+            <div>
+              <p class="kicker">Online Consultation</p>
+              <h3>Video consultation from ₹199</h3>
+              <p>Talk to verified doctors in 15 minutes — prescriptions sent to your phone.</p>
+            </div>
+            <ul><li>General physician</li><li>Dermatology</li><li>Paediatrics</li></ul>
+            <button type="button" class="btn btn-outline" style="align-self:flex-start" data-open="consult">Book Consultation</button>
           </div>
-          <ul><li>General physician</li><li>Dermatology</li><li>Paediatrics</li></ul>
-          <a href="#" class="btn btn-outline" style="align-self:flex-start" data-toast="Consultations open soon (demo)">Book Consultation</a>
-          <svg class="art" viewBox="0 0 200 200" aria-hidden="true">
-            <rect x="40" y="30" width="140" height="150" rx="20" fill="#fff"/>
-            <rect x="40" y="30" width="140" height="34" rx="20" fill="#b7791f" opacity=".85"/>
-            <circle cx="110" cy="112" r="28" fill="#ffc845"/>
-            <path d="M74 176c4-24 18-36 36-36s32 12 36 36" fill="#ffc845"/>
-            <circle cx="60" cy="47" r="5" fill="#fff"/>
-          </svg>
+          <div class="photo"><img src="images/consult.jpg" alt="Doctor discussing a diagnosis with an elderly patient" loading="lazy" width="720" height="480" /></div>
         </article>
       </div>
     </section>
 
-    <!-- ================= BEST SELLERS ================= -->
+    <!-- ================= PRODUCTS ================= -->
     <section id="best-sellers" style="padding-top:0">
       <div class="wrap">
         <div class="section-head">
@@ -557,10 +666,21 @@
             <h2>Best Sellers</h2>
             <p>Customer favourites with thousands of 5-star reviews.</p>
           </div>
-          <a href="#best-sellers" class="link-arrow" data-filter-link="all">View all products →</a>
         </div>
         <div class="tabs" role="tablist" id="tabs" aria-label="Filter products"></div>
-        <div class="grid" id="products" aria-live="polite"></div>
+        <div class="toolbar">
+          <span id="result-info" aria-live="polite"></span>
+          <label>Sort by
+            <select id="sort">
+              <option value="popular">Most popular</option>
+              <option value="low">Price: low to high</option>
+              <option value="high">Price: high to low</option>
+              <option value="rating">Top rated</option>
+              <option value="discount">Biggest discount</option>
+            </select>
+          </label>
+        </div>
+        <div class="grid" id="products"></div>
       </div>
     </section>
 
@@ -572,9 +692,9 @@
             <div>
               <span class="tag">Featured brand</span>
               <h3 style="margin-top:14px">Verde Wellness — new arrivals</h3>
-              <p>Clean, science-led formulations for everyday wellness. Multivitamins, plant protein and hydration made simple.</p>
+              <p>Clean, science-led formulations for everyday wellness. Omega-3, vitamin C and gut health made simple.</p>
             </div>
-            <a href="#best-sellers" class="btn btn-mint" style="align-self:flex-start" data-filter-link="vitamins">Shop Verde Wellness</a>
+            <button type="button" class="btn btn-mint" style="align-self:flex-start" data-brand="Verde Wellness">Shop Verde Wellness</button>
           </div>
           <div class="right" id="brand-minis"></div>
         </div>
@@ -584,30 +704,36 @@
     <!-- ================= WHY US ================= -->
     <section style="padding-top:0">
       <div class="wrap">
-        <div class="section-head"><div><h2>Why families choose us</h2></div></div>
-        <div class="why">
-          <div class="why-item">
-            <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></svg></span>
-            <h3>100% genuine</h3><p>Sourced directly from licensed distributors and manufacturers.</p>
+        <div class="section-head"><div><h2>Why families choose us</h2><p>Real pharmacists, real doctors, real fast.</p></div></div>
+        <div class="why-wrap">
+          <div class="why-photo">
+            <img src="images/team.jpg" alt="Team of doctors and nurses discussing a patient case" loading="lazy" width="720" height="480" />
+            <div class="caption"><b>500+ verified doctors & pharmacists</b>Every order is checked by a licensed pharmacist.</div>
           </div>
-          <div class="why-item">
-            <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="13" height="10" rx="1"/><path d="M15 10h4l3 3v4h-7"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></span>
-            <h3>24-hour delivery</h3><p>Fast delivery across the Tricity, with live order tracking.</p>
-          </div>
-          <div class="why-item">
-            <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h10M4 17h7"/><circle cx="18" cy="16" r="3"/></svg></span>
-            <h3>Up to 25% off</h3><p>Everyday savings on medicines and wellness essentials.</p>
-          </div>
-          <div class="why-item">
-            <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
-            <h3>Pharmacist support</h3><p>Questions about a medicine? Chat with a pharmacist anytime.</p>
+          <div class="why">
+            <div class="why-item">
+              <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></svg></span>
+              <h3>100% genuine</h3><p>Sourced directly from licensed distributors and manufacturers.</p>
+            </div>
+            <div class="why-item">
+              <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="13" height="10" rx="1"/><path d="M15 10h4l3 3v4h-7"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></span>
+              <h3>24-hour delivery</h3><p>Fast delivery across the Tricity, with live order tracking.</p>
+            </div>
+            <div class="why-item">
+              <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h10M4 17h7"/><circle cx="18" cy="16" r="3"/></svg></span>
+              <h3>Up to 25% off</h3><p>Everyday savings on medicines and wellness essentials.</p>
+            </div>
+            <div class="why-item">
+              <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+              <h3>Pharmacist support</h3><p>Questions about a medicine? Chat with a pharmacist anytime.</p>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- ================= DOCTOR CTA ================= -->
-    <section style="padding-top:0;padding-bottom:0">
+    <section style="padding-top:0">
       <div class="wrap">
         <div class="doctor-cta">
           <div>
@@ -620,7 +746,24 @@
             <li>Prescriptions provided</li>
             <li>Follow-up chat included</li>
           </ul>
-          <a href="#" class="btn btn-mint" data-toast="Consultations open soon (demo)">Consult Now</a>
+          <button type="button" class="btn btn-mint" data-open="consult">Consult Now</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= NEWSLETTER ================= -->
+    <section style="padding-top:0;padding-bottom:0">
+      <div class="wrap">
+        <div class="newsletter">
+          <div>
+            <h2>Get health tips & exclusive offers</h2>
+            <p>One email a week. No spam — unsubscribe anytime.</p>
+          </div>
+          <form id="newsletter" novalidate>
+            <label class="sr-only" for="nl-email">Email address</label>
+            <input id="nl-email" type="email" placeholder="you@example.com" required />
+            <button class="btn btn-dark" type="submit">Subscribe</button>
+          </form>
         </div>
       </div>
     </section>
@@ -634,27 +777,159 @@
             <span class="logo-mark" style="background:#1c5a4f"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16M4 12h16" stroke="#37d39b" stroke-width="4" stroke-linecap="round"/></svg></span>
             Remedy Lane
           </a>
-          <p>A concept online pharmacy landing page — designed and built by <a href="https://arshiiiverse.github.io" style="color:#37d39b">Arshdeep Kaur</a>. Remedy Lane is a fictional brand.</p>
+          <p>A concept online pharmacy — designed and built by <a href="https://arshiiiverse.github.io" style="color:#37d39b">Arshdeep Kaur</a>. Remedy Lane is a fictional brand; no real orders are placed.</p>
         </div>
         <div>
           <h4>Shop</h4>
-          <ul><li><a href="#categories">Categories</a></li><li><a href="#best-sellers">Best Sellers</a></li><li><a href="#best-sellers">Offers</a></li></ul>
+          <ul><li><a href="#categories">Categories</a></li><li><button type="button" data-filter="all" data-sort="popular">Best Sellers</button></li><li><button type="button" data-filter="offer">Offers</button></li></ul>
         </div>
         <div>
           <h4>Services</h4>
-          <ul><li><a href="#services">Lab Tests</a></li><li><a href="#doctor">Doctor Consultation</a></li><li><a href="#top">Upload Prescription</a></li></ul>
+          <ul><li><button type="button" data-open="lab">Lab Tests</button></li><li><button type="button" data-open="consult">Doctor Consultation</button></li><li><button type="button" data-open="rx">Upload Prescription</button></li></ul>
         </div>
         <div>
           <h4>Project</h4>
-          <ul><li><a href="https://github.com/arshiiiverse">GitHub</a></li><li><a href="https://arshiiiverse.github.io">Portfolio</a></li><li><a href="https://www.linkedin.com/in/arshdeep-kaur-411302427">LinkedIn</a></li></ul>
+          <ul><li><a href="https://github.com/arshiiiverse/remedy-lane">Source code</a></li><li><a href="https://arshiiiverse.github.io">Portfolio</a></li><li><a href="https://www.linkedin.com/in/arshdeep-kaur-411302427">LinkedIn</a></li></ul>
         </div>
       </div>
       <div class="copyright">
-        <p>© <span id="year"></span> Remedy Lane (concept). Not a real pharmacy — for portfolio purposes only.</p>
+        <p>© <span id="year"></span> Remedy Lane (concept) · Photos from <a href="https://stocksnap.io" rel="noopener">StockSnap</a> (CC0).</p>
         <p>Designed &amp; developed by Arshdeep Kaur</p>
       </div>
     </div>
   </footer>
+
+  <!-- ================= CART DRAWER ================= -->
+  <div class="overlay" id="overlay"></div>
+  <aside class="drawer" id="cart" role="dialog" aria-modal="true" aria-labelledby="cart-title" aria-hidden="true">
+    <div class="drawer-head">
+      <h2 id="cart-title">Your cart</h2>
+      <button class="close" data-close aria-label="Close cart">✕</button>
+    </div>
+    <div class="drawer-body" id="cart-body"></div>
+    <div class="drawer-foot" id="cart-foot"></div>
+  </aside>
+
+  <!-- ================= CHECKOUT MODAL ================= -->
+  <div class="modal" id="checkout" role="dialog" aria-modal="true" aria-labelledby="checkout-title" aria-hidden="true">
+    <div class="modal-head">
+      <div><h2 id="checkout-title">Checkout</h2><p>Delivery within 24 hours across the Tricity.</p></div>
+      <button class="close" data-close aria-label="Close checkout">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="checkout-form" novalidate>
+        <div class="form-grid two">
+          <div class="field"><label for="co-name">Full name</label><input id="co-name" name="name" autocomplete="name" /><p class="err">Please enter your name.</p></div>
+          <div class="field"><label for="co-phone">Mobile number</label><input id="co-phone" name="phone" inputmode="numeric" maxlength="10" autocomplete="tel-national" placeholder="10-digit number" /><p class="err">Enter a valid 10-digit Indian mobile number.</p></div>
+          <div class="field full"><label for="co-address">Address</label><textarea id="co-address" name="address" autocomplete="street-address" placeholder="House no., sector, landmark"></textarea><p class="err">Please enter your delivery address.</p></div>
+          <div class="field"><label for="co-city">City</label><select id="co-city" name="city"><option>Chandigarh</option><option>Mohali</option><option>Panchkula</option></select></div>
+          <div class="field"><label for="co-pin">PIN code</label><input id="co-pin" name="pin" inputmode="numeric" maxlength="6" placeholder="e.g. 160017" /><p class="err">We deliver to PIN codes starting 160, 140 or 134.</p></div>
+          <div class="field full">
+            <label>Payment method</label>
+            <div class="radio-cards">
+              <label><input type="radio" name="pay" value="Cash on delivery" checked /> Cash on delivery</label>
+              <label><input type="radio" name="pay" value="UPI on delivery" /> UPI on delivery</label>
+            </div>
+          </div>
+        </div>
+        <div class="order-summary" id="co-summary"></div>
+        <button type="submit" class="btn btn-dark btn-block" style="margin-top:16px">Place order</button>
+        <p class="note">Demo store — no payment is taken and nothing is shipped.</p>
+      </form>
+      <div class="success" id="checkout-success" hidden></div>
+    </div>
+  </div>
+
+  <!-- ================= PRESCRIPTION MODAL ================= -->
+  <div class="modal" id="rx" role="dialog" aria-modal="true" aria-labelledby="rx-title" aria-hidden="true">
+    <div class="modal-head">
+      <div><h2 id="rx-title">Upload prescription</h2><p>A pharmacist will call you within 30 minutes to confirm your order.</p></div>
+      <button class="close" data-close aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="rx-form" novalidate>
+        <div class="form-grid">
+          <div class="field">
+            <label class="dropzone" id="dropzone" for="rx-file">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="margin:0 auto 8px"><path d="M12 16V4m0 0l-4 4m4-4l4 4"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+              <b>Click to upload</b> or drag & drop<br /><small>JPG, PNG or PDF · max 5 MB</small>
+              <input id="rx-file" type="file" accept="image/*,application/pdf" />
+            </label>
+            <div class="preview" id="rx-preview"></div>
+            <p class="err" id="rx-file-err">Please add a photo or PDF of your prescription (max 5 MB).</p>
+          </div>
+          <div class="form-grid two">
+            <div class="field"><label for="rx-name">Patient name</label><input id="rx-name" autocomplete="name" /><p class="err">Please enter the patient's name.</p></div>
+            <div class="field"><label for="rx-phone">Mobile number</label><input id="rx-phone" inputmode="numeric" maxlength="10" autocomplete="tel-national" /><p class="err">Enter a valid 10-digit mobile number.</p></div>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-dark btn-block" style="margin-top:18px">Submit prescription</button>
+        <p class="note">Demo — your file stays in your browser and is never uploaded.</p>
+      </form>
+      <div class="success" hidden></div>
+    </div>
+  </div>
+
+  <!-- ================= LAB TEST MODAL ================= -->
+  <div class="modal" id="lab" role="dialog" aria-modal="true" aria-labelledby="lab-title" aria-hidden="true">
+    <div class="modal-head">
+      <div><h2 id="lab-title">Book a lab test</h2><p>Home sample collection · reports in 24–48 hours.</p></div>
+      <button class="close" data-close aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="lab-form" novalidate>
+        <div class="form-grid two">
+          <div class="field full"><label for="lab-test">Test</label>
+            <select id="lab-test">
+              <option value="Full Body Checkup|1499">Full Body Checkup (72 tests) — ₹1,499</option>
+              <option value="Thyroid Profile|399">Thyroid Profile (T3, T4, TSH) — ₹399</option>
+              <option value="HbA1c (Diabetes)|349">HbA1c (Diabetes) — ₹349</option>
+              <option value="Vitamin D & B12|899">Vitamin D & B12 — ₹899</option>
+              <option value="Lipid Profile|499">Lipid Profile — ₹499</option>
+            </select>
+          </div>
+          <div class="field"><label for="lab-date">Date</label><input id="lab-date" type="date" /><p class="err">Choose a date from tomorrow onwards.</p></div>
+          <div class="field"><label for="lab-phone">Mobile number</label><input id="lab-phone" inputmode="numeric" maxlength="10" /><p class="err">Enter a valid 10-digit mobile number.</p></div>
+          <div class="field full"><label>Collection slot</label>
+            <div class="slots" id="lab-slots"></div><p class="err">Please pick a time slot.</p>
+          </div>
+          <div class="field full"><label for="lab-address">Collection address</label><textarea id="lab-address" placeholder="House no., sector, city"></textarea><p class="err">Please enter the collection address.</p></div>
+        </div>
+        <button type="submit" class="btn btn-dark btn-block" style="margin-top:18px">Confirm booking</button>
+      </form>
+      <div class="success" hidden></div>
+    </div>
+  </div>
+
+  <!-- ================= CONSULT MODAL ================= -->
+  <div class="modal" id="consult" role="dialog" aria-modal="true" aria-labelledby="consult-title" aria-hidden="true">
+    <div class="modal-head">
+      <div><h2 id="consult-title">Book a video consultation</h2><p>Talk to a verified doctor from home.</p></div>
+      <button class="close" data-close aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="consult-form" novalidate>
+        <div class="form-grid two">
+          <div class="field full"><label>Speciality</label>
+            <div class="radio-cards">
+              <label><input type="radio" name="spec" value="General Physician|199" checked /> General Physician · ₹199</label>
+              <label><input type="radio" name="spec" value="Dermatologist|349" /> Dermatologist · ₹349</label>
+              <label><input type="radio" name="spec" value="Paediatrician|299" /> Paediatrician · ₹299</label>
+              <label><input type="radio" name="spec" value="Gynaecologist|399" /> Gynaecologist · ₹399</label>
+            </div>
+          </div>
+          <div class="field"><label for="c-name">Patient name</label><input id="c-name" autocomplete="name" /><p class="err">Please enter the patient's name.</p></div>
+          <div class="field"><label for="c-phone">Mobile number</label><input id="c-phone" inputmode="numeric" maxlength="10" /><p class="err">Enter a valid 10-digit mobile number.</p></div>
+          <div class="field full"><label>Today's available slots</label>
+            <div class="slots" id="c-slots"></div><p class="err">Please pick a time slot.</p>
+          </div>
+          <div class="field full"><label for="c-symptoms">Symptoms (optional)</label><textarea id="c-symptoms" placeholder="Briefly describe how you're feeling"></textarea></div>
+        </div>
+        <button type="submit" class="btn btn-dark btn-block" style="margin-top:18px">Book consultation</button>
+      </form>
+      <div class="success" hidden></div>
+    </div>
+  </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"><span class="tick">✓</span><span id="toast-text"></span></div>
 
@@ -664,86 +939,92 @@
       const $ = (s, c = document) => c.querySelector(s);
       const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
 
-      /* ---------- Data ---------- */
+      /* ================= DATA ================= */
       const CATEGORIES = [
-        { id: 'skin',      name: 'Personal Care',          count: '1,240 items', shape: 'pump',   c: ['#e3ebe8', '#dbe6ff', '#2b63c6'] },
-        { id: 'vitamins',  name: 'Vitamins & Supplements', count: '860 items',   shape: 'bottle', c: ['#ffc845', '#fff', '#10231f'] },
-        { id: 'fitness',   name: 'Fitness & Nutrition',    count: '420 items',   shape: 'tub',    c: ['#10231f', '#2f3b39', '#37d39b'] },
-        { id: 'diabetes',  name: 'Diabetes Care',          count: '310 items',   shape: 'device', c: ['#2b63c6', '#e6f1ff', '#2b63c6'] },
-        { id: 'firstaid',  name: 'First Aid',              count: '190 items',   shape: 'kit',    c: ['#ff7a59', '#fff', '#ff7a59'] },
-        { id: 'ayurveda',  name: 'Ayurveda',               count: '540 items',   shape: 'bottle', c: ['#6b8e23', '#f1f6e4', '#3f5a10'] },
-        { id: 'baby',      name: 'Baby Care',              count: '280 items',   shape: 'tube',   c: ['#ffb4c6', '#fff', '#c2416a'] },
-        { id: 'digestive', name: 'Digestive Health',       count: '230 items',   shape: 'bottle', c: ['#1c5a4f', '#e6f8f0', '#123a33'] }
+        { id: 'medicines', name: 'Medicines',              img: 'images/paracetamol.jpg' },
+        { id: 'vitamins',  name: 'Vitamins & Supplements', img: 'images/oranges.jpg' },
+        { id: 'skin',      name: 'Skin Care',              img: 'images/skin-care.jpg' },
+        { id: 'fitness',   name: 'Fitness & Nutrition',    img: 'images/whey.jpg' },
+        { id: 'baby',      name: 'Baby Care',              img: 'images/baby-lotion.jpg' },
+        { id: 'ayurveda',  name: 'Ayurveda',               img: 'images/ashwagandha.jpg' },
+        { id: 'devices',   name: 'Health Devices',         img: 'images/stethoscope.jpg' },
+        { id: 'hygiene',   name: 'Masks & Hygiene',        img: 'images/face-masks.jpg' }
       ];
 
       const PRODUCTS = [
-        { name: 'Omega-3 Fish Oil 1000 mg',     cat: 'vitamins', brand: 'Verde Wellness', price: 549, mrp: 699, rating: 4.8, reviews: 1234, badge: 'new',  shape: 'bottle', c: ['#ff9f43', '#fff', '#c45a00'], label: 'OMEGA 3' },
-        { name: 'Vitamin C 1000 mg Tablets',    cat: 'vitamins', brand: 'Verde Wellness', price: 299, mrp: 399, rating: 4.7, reviews: 2210, badge: 'off',  shape: 'tub',    c: ['#ffc845', '#fff6e2', '#10231f'], label: 'VIT C' },
-        { name: 'Whey Protein Isolate 1 kg',    cat: 'fitness',  brand: 'PeakForm',       price: 2899, mrp: 3499, rating: 4.6, reviews: 980, badge: 'off', shape: 'tub',    c: ['#10231f', '#2f3b39', '#37d39b'], label: 'WHEY' },
-        { name: 'Sunscreen SPF 50 PA++++',      cat: 'skin',     brand: 'DermaLeaf',      price: 449, mrp: 525, rating: 4.7, reviews: 1650, badge: 'off',  shape: 'tube',   c: ['#ff7a59', '#fff', '#ff7a59'], label: 'SPF 50' },
-        { name: 'Gentle Baby Lotion 200 ml',    cat: 'baby',     brand: 'Tiny Bloom',     price: 245, mrp: 289, rating: 4.8, reviews: 760,  badge: 'off',  shape: 'pump',   c: ['#ffb4c6', '#fff', '#c2416a'], label: 'BABY' },
-        { name: 'Glucometer Starter Kit',       cat: 'diabetes', brand: 'AccuLife',       price: 999, mrp: 1499, rating: 4.5, reviews: 540, badge: 'off',  shape: 'device', c: ['#2b63c6', '#e6f1ff', '#2b63c6'], label: '' },
-        { name: 'Ashwagandha 500 mg Capsules',  cat: 'ayurveda', brand: 'Vedic Roots',    price: 349, mrp: 399, rating: 4.6, reviews: 1890, badge: 'new',  shape: 'bottle', c: ['#6b8e23', '#f1f6e4', '#3f5a10'], label: 'ASHWA' },
-        { name: 'First Aid Kit — 42 pieces',    cat: 'firstaid', brand: 'SafeHands',      price: 499, mrp: 649, rating: 4.7, reviews: 430,  badge: 'off',  shape: 'kit',    c: ['#ff7a59', '#fff', '#ff7a59'], label: '' },
-        { name: 'Probiotic Gut Health 30 caps', cat: 'digestive',brand: 'Verde Wellness', price: 599, mrp: 749, rating: 4.6, reviews: 670,  badge: 'off',  shape: 'bottle', c: ['#1c5a4f', '#e6f8f0', '#123a33'], label: 'PROBIO' },
-        { name: 'Collagen Peptides Type I',     cat: 'vitamins', brand: 'DermaLeaf',      price: 1199, mrp: 1399, rating: 4.5, reviews: 820, badge: 'new', shape: 'tub',    c: ['#f5b5c8', '#fff', '#a3355a'], label: 'COLLAGEN' },
-        { name: 'Foaming Face Cleanser',        cat: 'skin',     brand: 'DermaLeaf',      price: 375, mrp: 425, rating: 4.4, reviews: 1120, badge: 'off',  shape: 'pump',   c: ['#37d39b', '#fff', '#1c5a4f'], label: 'CLEANSE' },
-        { name: 'Diaper Rash Cream 50 g',       cat: 'baby',     brand: 'Tiny Bloom',     price: 189, mrp: 220, rating: 4.8, reviews: 990,  badge: 'off',  shape: 'tube',   c: ['#7cc4ff', '#fff', '#2b63c6'], label: 'RASH' }
+        { id: 1,  name: 'Omega-3 Fish Oil 1000 mg',      pack: '60 softgels',   cat: 'vitamins',  brand: 'Verde Wellness', price: 549,  mrp: 699,  rating: 4.8, reviews: 1234, sold: 980, isNew: true,  img: 'images/omega3.jpg' },
+        { id: 2,  name: 'Vitamin C 1000 mg Tablets',     pack: '60 tablets',    cat: 'vitamins',  brand: 'Verde Wellness', price: 299,  mrp: 399,  rating: 4.7, reviews: 2210, sold: 1500, img: 'images/vitamin-c.jpg' },
+        { id: 3,  name: 'Daily Multivitamin for Adults', pack: '90 tablets',    cat: 'vitamins',  brand: 'NutriCore',      price: 649,  mrp: 799,  rating: 4.6, reviews: 1410, sold: 870, img: 'images/multivitamin.jpg' },
+        { id: 4,  name: 'Paracetamol 500 mg',            pack: 'Strip of 15',   cat: 'medicines', brand: 'MediPlus',       price: 32,   mrp: 35,   rating: 4.8, reviews: 5320, sold: 4200, img: 'images/paracetamol.jpg' },
+        { id: 5,  name: 'Iron & Folic Acid Tablets',     pack: 'Strip of 30',   cat: 'medicines', brand: 'MediPlus',       price: 119,  mrp: 145,  rating: 4.5, reviews: 640, sold: 720, rx: true, img: 'images/tablets.jpg' },
+        { id: 6,  name: 'Probiotic Gut Health',          pack: '30 capsules',   cat: 'vitamins',  brand: 'Verde Wellness', price: 599,  mrp: 749,  rating: 4.6, reviews: 670,  sold: 540, isNew: true, img: 'images/probiotic.jpg' },
+        { id: 7,  name: 'Sunscreen SPF 50 PA++++',       pack: '50 g',          cat: 'skin',      brand: 'DermaLeaf',      price: 449,  mrp: 525,  rating: 4.7, reviews: 1650, sold: 1100, img: 'images/sunscreen.jpg' },
+        { id: 8,  name: 'Marine Collagen Peptides',      pack: '200 g',         cat: 'skin',      brand: 'DermaLeaf',      price: 1199, mrp: 1399, rating: 4.5, reviews: 820,  sold: 430, isNew: true, img: 'images/collagen.jpg' },
+        { id: 9,  name: 'Gentle Foaming Face Cleanser',  pack: '150 ml',        cat: 'skin',      brand: 'DermaLeaf',      price: 375,  mrp: 425,  rating: 4.4, reviews: 1120, sold: 760, img: 'images/cleanser.jpg' },
+        { id: 10, name: 'Whey Protein Isolate',          pack: '1 kg · Chocolate', cat: 'fitness', brand: 'PeakForm',      price: 2899, mrp: 3499, rating: 4.6, reviews: 980,  sold: 610, img: 'images/whey.jpg' },
+        { id: 11, name: 'Gentle Baby Lotion',            pack: '200 ml',        cat: 'baby',      brand: 'Tiny Bloom',     price: 245,  mrp: 289,  rating: 4.8, reviews: 760,  sold: 680, img: 'images/baby-lotion.jpg' },
+        { id: 12, name: 'Ashwagandha 500 mg Capsules',   pack: '60 capsules',   cat: 'ayurveda',  brand: 'Vedic Roots',    price: 349,  mrp: 399,  rating: 4.6, reviews: 1890, sold: 1300, img: 'images/ashwagandha.jpg' },
+        { id: 13, name: 'Dual-Head Stethoscope',         pack: '1 unit',        cat: 'devices',   brand: 'AccuLife',       price: 999,  mrp: 1499, rating: 4.5, reviews: 340,  sold: 210, img: 'images/stethoscope.jpg' },
+        { id: 14, name: 'Reusable Cotton Face Masks',    pack: 'Pack of 5',     cat: 'hygiene',   brand: 'SafeHands',      price: 199,  mrp: 299,  rating: 4.4, reviews: 2100, sold: 1900, img: 'images/face-masks.jpg' }
       ];
 
       const TABS = [
-        { id: 'all', name: 'All Products' }, { id: 'vitamins', name: 'Vitamins & Supplements' },
-        { id: 'skin', name: 'Skin & Hair' }, { id: 'baby', name: 'Baby Care' },
-        { id: 'ayurveda', name: 'Ayurveda' }, { id: 'diabetes', name: 'Diabetes Care' },
-        { id: 'fitness', name: 'Fitness' }, { id: 'under', name: 'Under ₹500' },
-        { id: 'new', name: 'New Arrivals' }
+        { id: 'all', name: 'All Products' }, ...CATEGORIES.map(c => ({ id: c.id, name: c.name })),
+        { id: 'under', name: 'Under ₹500' }, { id: 'new', name: 'New Arrivals' }, { id: 'offer', name: 'Offers 20%+' }
       ];
 
-      /* ---------- Product art (original SVG, no photos needed) ---------- */
-      function art(shape, c, label) {
-        const [main, body, ink] = c;
-        const txt = (y, s = 10) => label ? `<text x="60" y="${y}" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-weight="800" font-size="${s}" fill="${ink}">${label}</text>` : '';
-        switch (shape) {
-          case 'tub': return `<svg viewBox="0 0 120 140" aria-hidden="true"><rect x="18" y="20" width="84" height="22" rx="7" fill="${main}"/><rect x="22" y="38" width="76" height="92" rx="14" fill="${body}" stroke="#e3ebe8"/><rect x="22" y="62" width="76" height="40" fill="${main}" opacity=".9"/>${txt(87, label.length > 6 ? 9 : 12).replace(`fill="${ink}"`, `fill="${body === '#fff' || body === '#fff6e2' ? ink : '#fff'}"`)}</svg>`;
-          case 'tube': return `<svg viewBox="0 0 120 140" aria-hidden="true"><path d="M34 14h52l-6 96H40z" fill="${body}" stroke="#e3ebe8"/><rect x="40" y="108" width="40" height="22" rx="5" fill="${main}"/><rect x="36" y="10" width="48" height="8" rx="3" fill="${main}"/><rect x="38" y="44" width="44" height="30" rx="4" fill="${main}" opacity=".18"/>${txt(63, 10)}</svg>`;
-          case 'pump': return `<svg viewBox="0 0 120 140" aria-hidden="true"><rect x="54" y="6" width="12" height="18" fill="${main}"/><path d="M50 8h34v8H50z" fill="${main}"/><rect x="48" y="22" width="24" height="12" rx="3" fill="${main}"/><rect x="30" y="32" width="60" height="98" rx="18" fill="${body}" stroke="#e3ebe8"/><rect x="30" y="62" width="60" height="36" fill="${main}" opacity=".9"/>${txt(84, 10).replace(`fill="${ink}"`, 'fill="#fff"')}</svg>`;
-          case 'device': return `<svg viewBox="0 0 120 140" aria-hidden="true"><rect x="28" y="12" width="64" height="116" rx="18" fill="#fff" stroke="#e3ebe8" stroke-width="2"/><rect x="38" y="26" width="44" height="40" rx="8" fill="${body}"/><text x="60" y="54" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-weight="800" font-size="18" fill="${ink}">98</text><circle cx="60" cy="92" r="12" fill="${main}"/><rect x="50" y="112" width="20" height="5" rx="2.5" fill="#e3ebe8"/></svg>`;
-          case 'kit': return `<svg viewBox="0 0 120 140" aria-hidden="true"><rect x="44" y="26" width="32" height="16" rx="5" fill="none" stroke="${main}" stroke-width="5"/><rect x="14" y="40" width="92" height="80" rx="14" fill="${main}"/><rect x="14" y="40" width="92" height="14" rx="7" fill="#000" opacity=".08"/><path d="M60 64v36M42 82h36" stroke="#fff" stroke-width="10" stroke-linecap="round"/></svg>`;
-          default: return `<svg viewBox="0 0 120 140" aria-hidden="true"><rect x="38" y="8" width="44" height="20" rx="5" fill="${main}"/><rect x="28" y="24" width="64" height="106" rx="16" fill="${body}" stroke="#e3ebe8"/><rect x="28" y="56" width="64" height="44" fill="${main}" opacity=".95"/>${txt(82, label.length > 6 ? 9 : 11).replace(`fill="${ink}"`, 'fill="#fff"')}</svg>`;
-        }
-      }
-
+      const FREE_SHIPPING = 499, SHIPPING_FEE = 49;
       const rupee = n => '₹' + n.toLocaleString('en-IN');
       const discount = p => Math.round((1 - p.price / p.mrp) * 100);
+      const byId = id => PRODUCTS.find(p => p.id === id);
+      const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-      /* ---------- Render categories ---------- */
+      /* ================= STORAGE (safe) ================= */
+      const store = {
+        get(k, fallback) { try { const v = localStorage.getItem('rl-' + k); return v ? JSON.parse(v) : fallback; } catch (_) { return fallback; } },
+        set(k, v) { try { localStorage.setItem('rl-' + k, JSON.stringify(v)); } catch (_) { /* private mode */ } }
+      };
+      let cart = store.get('cart', {});          // { productId: qty }
+      const wished = new Set(store.get('wish', []));
+      // drop anything that no longer exists
+      Object.keys(cart).forEach(id => { if (!byId(+id)) delete cart[id]; });
+
+      /* ================= TOAST ================= */
+      const toastEl = $('#toast');
+      let toastTimer;
+      function toast(msg, action) {
+        $('#toast-text').innerHTML = esc(msg) + (action ? ` <button type="button" id="toast-action">${esc(action.label)}</button>` : '');
+        if (action) $('#toast-action').addEventListener('click', action.run);
+        toastEl.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2800);
+      }
+
+      /* ================= CATEGORIES & SELECTS ================= */
+      const countIn = id => PRODUCTS.filter(p => p.cat === id).length;
       $('#cats').innerHTML = CATEGORIES.map(c => `
         <li class="cat">
-          <a href="#best-sellers" data-filter-link="${c.id}">
-            <span class="circle">${art(c.shape, c.c, '')}</span>
+          <button type="button" data-filter="${c.id}">
+            <span class="circle"><img src="${c.img}" alt="" loading="lazy" width="560" height="373" /></span>
             <h3>${c.name}</h3>
-            <p>${c.count}</p>
-          </a>
+            <p>${countIn(c.id)} products</p>
+          </button>
         </li>`).join('');
 
-      /* ---------- Selects ---------- */
       const catOptions = CATEGORIES.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-      $('#search-cat').insertAdjacentHTML('beforeend', catOptions);
-      $('#finder-cat').insertAdjacentHTML('beforeend', catOptions);
+      $$('[data-cat-select]').forEach(s => s.insertAdjacentHTML('beforeend', catOptions));
       [...new Set(PRODUCTS.map(p => p.brand))].sort()
         .forEach(b => $('#finder-brand').insertAdjacentHTML('beforeend', `<option>${b}</option>`));
 
-      /* ---------- Featured brand minis ---------- */
       $('#brand-minis').innerHTML = PRODUCTS.filter(p => p.brand === 'Verde Wellness').slice(0, 3).map(p => `
-        <div class="mini">
-          <div class="pic">${art(p.shape, p.c, p.label)}</div>
-          <b>${p.name.split(' ').slice(0, 2).join(' ')}</b>
-          <span>from ${rupee(p.price)}</span>
-        </div>`).join('');
+        <button type="button" class="mini" data-add="${p.id}">
+          <img src="${p.img}" alt="" loading="lazy" />
+          <b>${p.name}</b>
+          <span>${rupee(p.price)} · Add to cart</span>
+        </button>`).join('');
 
-      /* ---------- Products + filtering ---------- */
-      const state = { tab: 'all', query: '', brand: 'all' };
-      const wished = new Set();
+      /* ================= PRODUCT LIST ================= */
+      const state = { tab: 'all', query: '', brand: 'all', sort: 'popular' };
 
       $('#tabs').innerHTML = TABS.map(t =>
         `<button class="tab" role="tab" data-tab="${t.id}" aria-selected="${t.id === 'all'}">${t.name}</button>`).join('');
@@ -751,120 +1032,473 @@
       function matches(p) {
         const t = state.tab;
         const okTab = t === 'all' || p.cat === t || (t === 'under' && p.price < 500) ||
-                      (t === 'new' && p.badge === 'new') || (t === 'offer' && discount(p) >= 15);
+                      (t === 'new' && p.isNew) || (t === 'offer' && discount(p) >= 20);
         const okBrand = state.brand === 'all' || p.brand === state.brand;
         const q = state.query.trim().toLowerCase();
-        const okQuery = !q || (p.name + ' ' + p.brand + ' ' + p.cat).toLowerCase().includes(q);
+        const okQuery = !q || q.split(/\s+/).every(w => (p.name + ' ' + p.brand + ' ' + p.cat + ' ' + p.pack).toLowerCase().includes(w));
         return okTab && okBrand && okQuery;
       }
 
+      const sorters = {
+        popular: (a, b) => b.sold - a.sold,
+        low: (a, b) => a.price - b.price,
+        high: (a, b) => b.price - a.price,
+        rating: (a, b) => b.rating - a.rating || b.reviews - a.reviews,
+        discount: (a, b) => discount(b) - discount(a)
+      };
+
+      function buyControl(p) {
+        const q = cart[p.id] || 0;
+        return q
+          ? `<div class="stepper" aria-label="Quantity of ${esc(p.name)}"><button type="button" data-dec="${p.id}" aria-label="Remove one">−</button><span>${q}</span><button type="button" data-inc="${p.id}" aria-label="Add one">+</button></div>`
+          : `<button type="button" class="add" data-add="${p.id}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M12 5v14M5 12h14"/></svg>Add</button>`;
+      }
+
       function renderProducts() {
-        const list = PRODUCTS.map((p, i) => ({ ...p, i })).filter(matches);
+        const list = PRODUCTS.filter(matches).sort(sorters[state.sort]);
+        const filters = [];
+        if (state.query) filters.push(`<span class="active-filter">“${esc(state.query)}” <button type="button" data-clear="query" aria-label="Clear search">✕</button></span>`);
+        if (state.brand !== 'all') filters.push(`<span class="active-filter">${esc(state.brand)} <button type="button" data-clear="brand" aria-label="Clear brand">✕</button></span>`);
+        $('#result-info').innerHTML = `${list.length} product${list.length === 1 ? '' : 's'} ${filters.join(' ')}`;
+
         $('#products').innerHTML = list.length ? list.map((p, n) => `
-          <article class="card" style="animation-delay:${n * 40}ms">
+          <article class="card" style="animation-delay:${n * 35}ms">
             <div class="thumb">
-              ${p.badge === 'new' ? '<span class="badge new">New</span>' : `<span class="badge">-${discount(p)}%</span>`}
-              <button class="wish" data-wish="${p.i}" aria-pressed="${wished.has(p.i)}" aria-label="Save ${p.name} to wishlist">
+              ${p.isNew ? '<span class="badge new">New</span>' : `<span class="badge">-${discount(p)}%</span>`}
+              ${p.rx ? '<span class="badge rx" title="Prescription required">Rx</span>' : ''}
+              <button type="button" class="wish" data-wish="${p.id}" aria-pressed="${wished.has(p.id)}" aria-label="Save ${esc(p.name)} to wishlist">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>
               </button>
-              ${art(p.shape, p.c, p.label)}
+              <img src="${p.img}" alt="${esc(p.name)}" loading="lazy" width="560" height="373" />
             </div>
-            <p class="meta">${p.brand}</p>
-            <h3>${p.name}</h3>
-            <p class="rating"><span class="stars" aria-hidden="true">★</span> ${p.rating} <span style="color:var(--muted)">(${p.reviews.toLocaleString('en-IN')} reviews)</span></p>
-            <div class="price-row">
-              <p class="price"><b>${rupee(p.price)}</b><s>${rupee(p.mrp)}</s></p>
-              <button class="add" data-add="${p.i}">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M12 5v14M5 12h14"/></svg>Add
-              </button>
+            <div class="info">
+              <p class="meta">${esc(p.brand)}</p>
+              <h3>${esc(p.name)}</h3>
+              <p class="pack">${esc(p.pack)}</p>
+              <p class="rating"><span class="stars" aria-hidden="true">★</span> ${p.rating} <span style="color:var(--muted)">(${p.reviews.toLocaleString('en-IN')})</span></p>
+              <div class="price-row">
+                <p class="price"><b>${rupee(p.price)}</b><s>${rupee(p.mrp)}</s></p>
+                <span data-buy="${p.id}">${buyControl(p)}</span>
+              </div>
             </div>
           </article>`).join('')
-          : `<p class="empty">No products match your search. <button class="link-arrow" data-reset>Clear filters</button></p>`;
+          : `<p class="empty">No products match your search. <button type="button" class="link-arrow" data-reset>Clear filters</button></p>`;
+      }
+
+      function refreshBuy(id) {
+        const slot = $(`[data-buy="${id}"]`);
+        if (slot) slot.innerHTML = buyControl(byId(id));
       }
 
       function setTab(id) {
         state.tab = id;
         $$('.tab').forEach(t => t.setAttribute('aria-selected', String(t.dataset.tab === id)));
+        const active = $(`.tab[data-tab="${id}"]`);
+        if (active) active.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
         renderProducts();
       }
 
-      $('#tabs').addEventListener('click', e => {
-        const t = e.target.closest('.tab');
-        if (!t) return;
-        state.query = ''; state.brand = 'all';
-        setTab(t.dataset.tab);
+      function showProducts() { $('#best-sellers').scrollIntoView({ behavior: 'smooth' }); }
+
+      /* ================= CART ================= */
+      const cartCount = () => Object.values(cart).reduce((a, b) => a + b, 0);
+
+      function saveCart() {
+        store.set('cart', cart);
+        const n = cartCount();
+        const el = $('#cart-count');
+        el.textContent = n;
+        el.classList.toggle('show', n > 0);
+        el.classList.remove('bump'); void el.offsetWidth; if (n) el.classList.add('bump');
+        $('#cart-btn').setAttribute('aria-label', `Open cart, ${n} item${n === 1 ? '' : 's'}`);
+        renderCart();
+      }
+
+      function setQty(id, qty) {
+        if (qty <= 0) delete cart[id];
+        else cart[id] = Math.min(qty, 10);
+        saveCart();
+        refreshBuy(id);
+      }
+
+      function addToCart(id) {
+        const p = byId(id);
+        if ((cart[id] || 0) >= 10) { toast('Maximum 10 per item'); return; }
+        setQty(id, (cart[id] || 0) + 1);
+        toast(`${p.name} added to cart`, { label: 'View cart', run: () => openPanel('cart') });
+      }
+
+      function totals() {
+        const items = Object.entries(cart).map(([id, q]) => ({ p: byId(+id), q }));
+        const subtotal = items.reduce((s, i) => s + i.p.price * i.q, 0);
+        const mrp = items.reduce((s, i) => s + i.p.mrp * i.q, 0);
+        const shipping = subtotal === 0 || subtotal >= FREE_SHIPPING ? 0 : SHIPPING_FEE;
+        return { items, subtotal, savings: mrp - subtotal, shipping, total: subtotal + shipping };
+      }
+
+      function renderCart() {
+        const t = totals();
+        if (!t.items.length) {
+          $('#cart-body').innerHTML = `
+            <div class="cart-empty">
+              <div class="ic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6"/><circle cx="10" cy="20" r="1.3"/><circle cx="17" cy="20" r="1.3"/></svg></div>
+              <p><b style="color:var(--ink)">Your cart is empty</b></p>
+              <p style="margin-top:4px">Add medicines and wellness products to get started.</p>
+              <button type="button" class="btn btn-dark" style="margin-top:18px" data-close data-goto="products">Browse products</button>
+            </div>`;
+          $('#cart-foot').innerHTML = '';
+          return;
+        }
+        const left = FREE_SHIPPING - t.subtotal;
+        $('#cart-body').innerHTML = `
+          <div class="ship-bar">
+            ${left > 0 ? `Add <b>${rupee(left)}</b> more for <b>free delivery</b>` : '🎉 You’ve unlocked <b>free delivery</b>'}
+            <div class="track"><div class="fill" style="width:${Math.min(100, t.subtotal / FREE_SHIPPING * 100)}%"></div></div>
+          </div>
+          ${t.items.map(({ p, q }) => `
+            <div class="line-item">
+              <img src="${p.img}" alt="" />
+              <div>
+                <h3>${esc(p.name)}</h3>
+                <p class="sub">${esc(p.pack)} · ${rupee(p.price)} each</p>
+                ${p.rx ? '<p class="sub" style="color:#2b63c6">Prescription required</p>' : ''}
+              </div>
+              <div class="right">
+                <b>${rupee(p.price * q)}</b>
+                <div class="qty"><button type="button" data-dec="${p.id}" aria-label="Decrease quantity">−</button><span>${q}</span><button type="button" data-inc="${p.id}" aria-label="Increase quantity">+</button></div>
+                <button type="button" class="remove" data-remove="${p.id}">Remove</button>
+              </div>
+            </div>`).join('')}`;
+        $('#cart-foot').innerHTML = `
+          <div class="sum-row"><span>Subtotal</span><span>${rupee(t.subtotal)}</span></div>
+          <div class="sum-row"><span>You save</span><span class="save">${rupee(t.savings)}</span></div>
+          <div class="sum-row"><span>Delivery</span><span>${t.shipping ? rupee(t.shipping) : 'FREE'}</span></div>
+          <div class="sum-row total"><span>Total</span><span>${rupee(t.total)}</span></div>
+          <button type="button" class="btn btn-mint btn-block" data-open="checkout">Proceed to checkout</button>`;
+      }
+
+      /* ================= WISHLIST ================= */
+      function saveWish() {
+        store.set('wish', [...wished]);
+        const el = $('#wish-count');
+        el.textContent = wished.size;
+        el.classList.toggle('show', wished.size > 0);
+        $('#wish-btn').setAttribute('aria-label', `Wishlist, ${wished.size} item${wished.size === 1 ? '' : 's'}`);
+      }
+
+      /* ================= PANELS (drawer + modals) ================= */
+      let openId = null, lastFocus = null;
+      const overlay = $('#overlay');
+
+      function openPanel(id) {
+        if (openId) closePanel(true);
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (id === 'checkout') {
+          if (!cartCount()) { toast('Your cart is empty'); return; }
+          prepareCheckout();
+        }
+        if (id === 'lab' || id === 'consult' || id === 'rx') resetForm(id);
+        lastFocus = document.activeElement;
+        openId = id;
+        el.classList.add('open');
+        el.setAttribute('aria-hidden', 'false');
+        overlay.classList.add('show');
+        document.body.classList.add('locked');
+        setTimeout(() => { const f = el.querySelector('input:not([type=hidden]):not([type=radio]), select, textarea, button'); if (f) f.focus(); }, 60);
+      }
+
+      function closePanel(silent) {
+        if (!openId) return;
+        const el = document.getElementById(openId);
+        el.classList.remove('open');
+        el.setAttribute('aria-hidden', 'true');
+        overlay.classList.remove('show');
+        document.body.classList.remove('locked');
+        openId = null;
+        if (!silent && lastFocus) lastFocus.focus();
+      }
+
+      overlay.addEventListener('click', () => closePanel());
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closePanel();
+        if (e.key === 'Tab' && openId) {               // keep focus inside the open panel
+          const f = $$('button, input, select, textarea, a[href]', document.getElementById(openId)).filter(x => !x.disabled && x.offsetParent);
+          if (!f.length) return;
+          if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+          else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+        }
       });
 
-      // Any link that jumps to products with a preset filter
+      /* ================= ONE CLICK HANDLER ================= */
       document.addEventListener('click', e => {
-        const link = e.target.closest('[data-filter-link], [data-quick]');
-        if (!link) return;
-        const id = link.dataset.filterLink || link.dataset.quick;
-        state.query = ''; state.brand = 'all';
-        setTab(TABS.some(t => t.id === id) ? id : (id === 'offer' ? 'offer' : 'all'));
-        if (id === 'offer') $$('.tab').forEach(t => t.setAttribute('aria-selected', 'false'));
+        const t = e.target.closest('button, a');
+        if (!t) return;
+        const d = t.dataset;
+
+        if (d.add) addToCart(+d.add);
+        if (d.inc) setQty(+d.inc, (cart[d.inc] || 0) + 1);
+        if (d.dec) setQty(+d.dec, (cart[d.dec] || 0) - 1);
+        if (d.remove) {
+          const id = +d.remove, q = cart[id];
+          setQty(id, 0);
+          toast(`${byId(id).name} removed`, { label: 'Undo', run: () => setQty(id, q) });
+        }
+        if (d.wish) {
+          const id = +d.wish;
+          wished.has(id) ? wished.delete(id) : wished.add(id);
+          t.setAttribute('aria-pressed', String(wished.has(id)));
+          saveWish();
+          toast(wished.has(id) ? 'Saved to wishlist' : 'Removed from wishlist');
+        }
+        if (t.id === 'wish-btn') {
+          if (!wished.size) { toast('Your wishlist is empty — tap ♡ on a product'); return; }
+          state.query = ''; state.brand = 'all';
+          state.tab = 'all';
+          $$('.tab').forEach(x => x.setAttribute('aria-selected', 'false'));
+          const list = PRODUCTS.filter(p => wished.has(p.id));
+          renderProducts();
+          $$('#products .card').forEach(card => {
+            const id = +card.querySelector('[data-wish]').dataset.wish;
+            card.hidden = !wished.has(id);
+          });
+          $('#result-info').textContent = `${list.length} saved item${list.length === 1 ? '' : 's'} in your wishlist`;
+          showProducts();
+        }
+        if (d.filter) {
+          state.query = ''; state.brand = 'all';
+          if (d.sort) { state.sort = d.sort; $('#sort').value = d.sort; }
+          setTab(d.filter);
+          showProducts();
+        }
+        if (d.brand) { state.query = ''; state.brand = d.brand; setTab('all'); showProducts(); }
+        if (d.tab) { state.query = ''; state.brand = 'all'; setTab(d.tab); }
+        if (d.clear) { state[d.clear] = d.clear === 'brand' ? 'all' : ''; renderProducts(); }
+        if (d.reset) { state.query = ''; state.brand = 'all'; setTab('all'); }
+        if ('close' in d) closePanel();
+        if (d.open) openPanel(d.open);
+        if (d.goto === 'products') showProducts();
       });
 
-      /* ---------- Cart + wishlist ---------- */
-      let cart = 0;
-      const cartCount = $('#cart-count');
-      $('#products').addEventListener('click', e => {
-        const add = e.target.closest('[data-add]');
-        const wish = e.target.closest('[data-wish]');
-        const reset = e.target.closest('[data-reset]');
-        if (add) {
-          cart++;
-          cartCount.textContent = cart;
-          cartCount.classList.add('show');
-          cartCount.classList.remove('bump'); void cartCount.offsetWidth; cartCount.classList.add('bump');
-          $('#cart-btn').setAttribute('aria-label', `Cart, ${cart} item${cart > 1 ? 's' : ''}`);
-          add.classList.add('added');
-          add.lastChild.textContent = 'Added';
-          setTimeout(() => { add.classList.remove('added'); add.lastChild.textContent = 'Add'; }, 1400);
-          toast(`${PRODUCTS[add.dataset.add].name} added to cart`);
-        }
-        if (wish) {
-          const i = Number(wish.dataset.wish);
-          wished.has(i) ? wished.delete(i) : wished.add(i);
-          wish.setAttribute('aria-pressed', String(wished.has(i)));
-          toast(wished.has(i) ? 'Saved to wishlist' : 'Removed from wishlist');
-        }
-        if (reset) { state.query = ''; state.brand = 'all'; setTab('all'); }
-      });
+      $('#cart-btn').addEventListener('click', () => openPanel('cart'));
+      $('#sort').addEventListener('change', e => { state.sort = e.target.value; renderProducts(); });
 
-      $('#cart-btn').addEventListener('click', () =>
-        toast(cart ? `You have ${cart} item${cart > 1 ? 's' : ''} in your cart (demo)` : 'Your cart is empty'));
-
-      /* ---------- Search + finder ---------- */
+      /* ================= SEARCH ================= */
       function runSearch(query, cat, brand) {
-        state.query = query || '';
+        state.query = (query || '').trim();
         state.brand = brand || 'all';
         setTab(cat || 'all');
-        $('#best-sellers').scrollIntoView({ behavior: 'smooth' });
+        showProducts();
       }
-      $('#header-search').addEventListener('submit', e => {
+      $$('[data-search]').forEach(f => f.addEventListener('submit', e => {
         e.preventDefault();
-        runSearch($('#search-input').value, $('#search-cat').value);
-      });
+        runSearch(f.querySelector('input').value, f.querySelector('select').value);
+        $('#mobile-search').classList.remove('open');
+        $('#mobile-search-btn').setAttribute('aria-expanded', 'false');
+      }));
       $('#finder').addEventListener('submit', e => {
         e.preventDefault();
-        runSearch($('#finder-sku').value, $('#finder-cat').value, $('#finder-brand').value);
+        runSearch($('#finder-name').value, $('#finder-cat').value, $('#finder-brand').value);
+      });
+      $('#mobile-search-btn').addEventListener('click', () => {
+        const open = $('#mobile-search').classList.toggle('open');
+        $('#mobile-search-btn').setAttribute('aria-expanded', String(open));
+        if (open) $('#m-search-input').focus();
+      });
+      $('#city').addEventListener('change', e => { $('#co-city').value = e.target.value; toast(`Delivering to ${e.target.value}`); });
+
+      /* ================= FORM HELPERS ================= */
+      const isPhone = v => /^[6-9]\d{9}$/.test(v.trim());
+      const digitsOnly = el => el.addEventListener('input', () => { el.value = el.value.replace(/\D/g, ''); });
+      $$('input[inputmode="numeric"]').forEach(digitsOnly);
+
+      function check(el, ok) {
+        const field = el.closest('.field');
+        field.classList.toggle('invalid', !ok);
+        el.setAttribute('aria-invalid', String(!ok));
+        return ok;
+      }
+      function firstInvalidFocus(form) {
+        const bad = form.querySelector('.field.invalid input, .field.invalid select, .field.invalid textarea');
+        if (bad) bad.focus();
+      }
+      const ref = prefix => prefix + '-' + Date.now().toString(36).toUpperCase().slice(-6);
+      const tickSvg = '<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 12l5 5L20 7"/></svg>';
+
+      function showSuccess(modalId, html) {
+        const m = document.getElementById(modalId);
+        m.querySelector('form').hidden = true;
+        const s = m.querySelector('.success');
+        s.innerHTML = `<div class="tick-big">${tickSvg}</div>${html}<div><button type="button" class="btn btn-dark" style="margin-top:20px" data-close>Done</button></div>`;
+        s.hidden = false;
+        s.querySelector('button').focus();
+      }
+
+      function resetForm(modalId) {
+        const m = document.getElementById(modalId);
+        const f = m.querySelector('form');
+        f.hidden = false;
+        m.querySelector('.success').hidden = true;
+        $$('.field.invalid', f).forEach(x => x.classList.remove('invalid'));
+      }
+
+      // Live re-validation once a field has been flagged
+      document.addEventListener('input', e => {
+        const field = e.target.closest('.field.invalid');
+        if (field) field.classList.remove('invalid');
       });
 
-      /* ---------- Misc ---------- */
-      const toastEl = $('#toast');
-      let toastTimer;
-      function toast(msg) {
-        $('#toast-text').textContent = msg;
-        toastEl.classList.add('show');
-        clearTimeout(toastTimer);
-        toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2400);
+      function makeSlots(container, name, slots) {
+        container.innerHTML = slots.map((s, i) =>
+          `<label><input type="radio" name="${name}" value="${s}" ${s.disabled ? 'disabled' : ''} /><span>${s}</span></label>`).join('');
       }
-      $$('[data-toast]').forEach(el => el.addEventListener('click', e => { e.preventDefault(); toast(el.dataset.toast); }));
-      $('#upload-rx').addEventListener('click', () => toast('Prescription upload opens soon (demo)'));
-      $('#year').textContent = new Date().getFullYear();
+      const LAB_SLOTS = ['7–8 AM', '8–9 AM', '9–10 AM', '10–11 AM', '4–5 PM', '5–6 PM'];
+      makeSlots($('#lab-slots'), 'lab-slot', LAB_SLOTS);
 
+      function consultSlots() {
+        const now = new Date();
+        const out = [];
+        const start = new Date(now); start.setMinutes(now.getMinutes() < 30 ? 30 : 60, 0, 0);
+        for (let i = 0; i < 8; i++) {
+          const d = new Date(start.getTime() + i * 30 * 60000);
+          if (d.getDate() !== now.getDate() || d.getHours() >= 23) break;
+          out.push(d.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' }));
+        }
+        return out.length ? out : ['Tomorrow 9:00 am', 'Tomorrow 9:30 am', 'Tomorrow 10:00 am'];
+      }
+      makeSlots($('#c-slots'), 'c-slot', consultSlots());
+
+      const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+      const iso = d => d.toISOString().slice(0, 10);
+      $('#lab-date').min = iso(tomorrow);
+      $('#lab-date').value = iso(tomorrow);
+
+      /* ================= CHECKOUT ================= */
+      function prepareCheckout() {
+        resetForm('checkout');
+        const t = totals();
+        $('#co-city').value = $('#city').value;
+        $('#co-summary').innerHTML = `
+          <div class="sum-row"><span>${cartCount()} item${cartCount() === 1 ? '' : 's'}</span><span>${rupee(t.subtotal)}</span></div>
+          <div class="sum-row"><span>Delivery</span><span>${t.shipping ? rupee(t.shipping) : 'FREE'}</span></div>
+          <div class="sum-row total"><span>To pay</span><span>${rupee(t.total)}</span></div>
+          ${t.items.some(i => i.p.rx) ? '<p class="sub" style="font-size:.8rem;color:#2b63c6">Your cart has a prescription item — our pharmacist will ask for it on delivery.</p>' : ''}`;
+      }
+
+      $('#checkout-form').addEventListener('submit', e => {
+        e.preventDefault();
+        const f = e.target;
+        const ok = [
+          check($('#co-name'), $('#co-name').value.trim().length >= 2),
+          check($('#co-phone'), isPhone($('#co-phone').value)),
+          check($('#co-address'), $('#co-address').value.trim().length >= 8),
+          check($('#co-pin'), /^(160|140|134)\d{3}$/.test($('#co-pin').value))
+        ].every(Boolean);
+        if (!ok) { firstInvalidFocus(f); return; }
+        const t = totals();
+        const id = ref('RL');
+        const first = esc($('#co-name').value.trim().split(' ')[0]);
+        const pay = esc(f.pay.value);
+        const eta = new Date(Date.now() + 24 * 3600 * 1000).toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' });
+        cart = {};
+        saveCart();
+        renderProducts();
+        showSuccess('checkout', `<h3>Order placed, ${first}!</h3><p>${rupee(t.total)} · ${pay}<br />Arriving by <b>${eta}</b> in ${esc($('#co-city').value)}.</p><span class="ref">Order ID ${id}</span>`);
+        f.reset();
+      });
+
+      /* ================= PRESCRIPTION ================= */
+      let rxFile = null;
+      const dz = $('#dropzone'), rxInput = $('#rx-file');
+      function takeFile(file) {
+        const err = $('#rx-file-err');
+        if (!file) return;
+        if (!/^image\/|application\/pdf/.test(file.type) || file.size > 5 * 1024 * 1024) {
+          rxFile = null; $('#rx-preview').classList.remove('show');
+          dz.closest('.field').classList.add('invalid'); err.style.display = 'block';
+          return;
+        }
+        rxFile = file;
+        dz.closest('.field').classList.remove('invalid'); err.style.display = '';
+        const p = $('#rx-preview');
+        const thumb = file.type.startsWith('image/') ? `<img src="${URL.createObjectURL(file)}" alt="Prescription preview" />` : '<span class="file-ic">PDF</span>';
+        p.innerHTML = `${thumb}<div><p class="name">${esc(file.name)}</p><p class="sub" style="font-size:.78rem;color:var(--muted)">${(file.size / 1024).toFixed(0)} KB · ready</p></div><button type="button" class="remove" id="rx-remove" style="margin-left:auto">Remove</button>`;
+        p.classList.add('show');
+        $('#rx-remove').addEventListener('click', () => { rxFile = null; rxInput.value = ''; p.classList.remove('show'); });
+      }
+      rxInput.addEventListener('change', () => takeFile(rxInput.files[0]));
+      ['dragenter', 'dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('drag'); }));
+      ['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('drag'); }));
+      dz.addEventListener('drop', e => takeFile(e.dataTransfer.files[0]));
+
+      $('#rx-form').addEventListener('submit', e => {
+        e.preventDefault();
+        const fileOk = !!rxFile;
+        dz.closest('.field').classList.toggle('invalid', !fileOk);
+        $('#rx-file-err').style.display = fileOk ? '' : 'block';
+        const ok = [
+          fileOk,
+          check($('#rx-name'), $('#rx-name').value.trim().length >= 2),
+          check($('#rx-phone'), isPhone($('#rx-phone').value))
+        ].every(Boolean);
+        if (!ok) { if (!fileOk) dz.focus(); else firstInvalidFocus(e.target); return; }
+        showSuccess('rx', `<h3>Prescription received</h3><p>Thanks, ${esc($('#rx-name').value.trim().split(' ')[0])}. A pharmacist will call <b>+91 ${esc($('#rx-phone').value)}</b> within 30 minutes.</p><span class="ref">Ref ${ref('RX')}</span>`);
+        e.target.reset(); rxFile = null; $('#rx-preview').classList.remove('show');
+      });
+
+      /* ================= LAB BOOKING ================= */
+      $('#lab-form').addEventListener('submit', e => {
+        e.preventDefault();
+        const f = e.target;
+        const slot = f.querySelector('input[name="lab-slot"]:checked');
+        const dateOk = $('#lab-date').value && $('#lab-date').value >= $('#lab-date').min;
+        $('#lab-slots').closest('.field').classList.toggle('invalid', !slot);
+        const ok = [
+          check($('#lab-date'), !!dateOk),
+          check($('#lab-phone'), isPhone($('#lab-phone').value)),
+          !!slot,
+          check($('#lab-address'), $('#lab-address').value.trim().length >= 8)
+        ].every(Boolean);
+        if (!ok) { firstInvalidFocus(f); return; }
+        const [test, price] = $('#lab-test').value.split('|');
+        const day = new Date($('#lab-date').value + 'T00:00').toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
+        showSuccess('lab', `<h3>Lab test booked</h3><p><b>${esc(test)}</b> · ${rupee(+price)}<br />Sample collection on ${day}, ${esc(slot.value)}.</p><span class="ref">Booking ${ref('LAB')}</span>`);
+        f.reset(); $('#lab-date').value = iso(tomorrow);
+      });
+
+      /* ================= CONSULT BOOKING ================= */
+      $('#consult-form').addEventListener('submit', e => {
+        e.preventDefault();
+        const f = e.target;
+        const slot = f.querySelector('input[name="c-slot"]:checked');
+        $('#c-slots').closest('.field').classList.toggle('invalid', !slot);
+        const ok = [
+          check($('#c-name'), $('#c-name').value.trim().length >= 2),
+          check($('#c-phone'), isPhone($('#c-phone').value)),
+          !!slot
+        ].every(Boolean);
+        if (!ok) { firstInvalidFocus(f); return; }
+        const [spec, fee] = f.spec.value.split('|');
+        showSuccess('consult', `<h3>Consultation booked</h3><p>${esc(spec)} · ${rupee(+fee)} at <b>${esc(slot.value)}</b>.<br />We’ll send the video link to +91 ${esc($('#c-phone').value)}.</p><span class="ref">Booking ${ref('DOC')}</span>`);
+        f.reset();
+        makeSlots($('#c-slots'), 'c-slot', consultSlots());
+      });
+
+      /* ================= NEWSLETTER ================= */
+      $('#newsletter').addEventListener('submit', e => {
+        e.preventDefault();
+        const input = $('#nl-email');
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(input.value.trim())) { toast('Please enter a valid email address'); input.focus(); return; }
+        toast('Subscribed! Check your inbox for a welcome offer (demo)');
+        e.target.reset();
+      });
+
+      /* ================= INIT ================= */
+      $('#year').textContent = new Date().getFullYear();
       renderProducts();
+      saveCart();
+      saveWish();
+      $('#cart-count').classList.remove('bump');
     })();
   </script>
 </body>
