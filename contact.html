@@ -75,7 +75,11 @@
         ].every(Boolean);
         if (!ok) { const bad = document.querySelector('#contact-form .field.invalid input, #contact-form .field.invalid textarea'); if (bad) bad.focus(); return; }
         const ticket = 'TKT-' + Date.now().toString(36).toUpperCase().slice(-6);
-        MP.store.set('messages', [{ ticket, topic: $('#ct-topic').value, date: new Date().toISOString() }, ...MP.store.get('messages', [])].slice(0, 20));
+        MP.store.set('messages', [{
+          ticket, topic: $('#ct-topic').value, date: new Date().toISOString(), status: 'open',
+          name: $('#ct-name').value.trim(), email: $('#ct-email').value.trim(), phone,
+          order: $('#ct-order').value.trim(), message: $('#ct-msg').value.trim()
+        }, ...MP.store.get('messages', [])].slice(0, 100));
         e.target.hidden = true;
         const s = $('#contact-success');
         s.innerHTML = `<div class="tick-big"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 12l5 5L20 7"/></svg></div>

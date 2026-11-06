@@ -176,5 +176,16 @@ window.MP_DATA = (function () {
     { id: 10, name: 'Dr. Aman Verma',      spec: 'ent',   qual: 'MBBS, MS (ENT)',        exp: 8,  rating: 4.7, consults: 1700, langs: 'English, Hindi',          color: '#fff1c2' }
   ];
 
-  return { CATEGORIES, PRODUCTS, LAB_TESTS, LAB_TAGS, SPECS, DOCTORS };
+  /* ---- Admin overrides (saved in this browser by admin.html) ---- */
+  const read = k => { try { return JSON.parse(localStorage.getItem('mp-' + k)); } catch (_) { return null; } };
+  const saved = read('products');
+  const ALL_PRODUCTS = Array.isArray(saved) && saved.length ? saved.map(P) : PRODUCTS;
+  const SETTINGS = Object.assign({ freeShipping: 499, shippingFee: 49, announcement: 'Free delivery on orders above ₹499 · Delivered within 24 hours' }, read('settings') || {});
+
+  return {
+    CATEGORIES, LAB_TESTS, LAB_TAGS, SPECS, DOCTORS, SETTINGS,
+    DEFAULT_PRODUCTS: PRODUCTS,                                   // original catalogue (for "reset")
+    ALL_PRODUCTS,                                                 // includes hidden products (old orders still resolve)
+    PRODUCTS: ALL_PRODUCTS.filter(p => p.active !== false)        // what shoppers see
+  };
 })();

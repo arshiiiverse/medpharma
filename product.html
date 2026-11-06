@@ -40,7 +40,7 @@
       const id = +new URLSearchParams(location.search).get('id');
       const p = byId(id);
 
-      if (!p) {
+      if (!p || p.active === false) {
         $('#crumbs').innerHTML = '<a href="index.html">Home</a><span>/</span><a href="catalog.html">Shop</a>';
         $('#pdp-root').innerHTML = `<div class="not-found"><h1>Product not found</h1><p>The product you're looking for may have been removed or the link is incorrect.</p><a class="btn btn-dark" href="catalog.html">Browse all products</a></div>`;
         document.title = 'Product not found — Medpharma';
@@ -141,6 +141,13 @@
       });
       document.addEventListener('mp:cart', syncQty);
       syncQty();
+      if (p.stock <= 0) {
+        ['#add-btn', '#buy-btn', '#q-inc', '#q-dec'].forEach(s => { $(s).disabled = true; });
+        $('#add-btn').textContent = 'Out of stock';
+        $('#in-cart').innerHTML = '<span style="color:var(--danger)">Currently out of stock — add it to your wishlist and check back soon.</span>';
+      } else if (p.stock <= 5) {
+        $('#in-cart').insertAdjacentHTML('afterend', `<p style="font-size:.85rem;color:var(--coral);font-weight:700;margin-top:6px">Hurry — only ${p.stock} left in stock</p>`);
+      }
 
       // PIN check
       $('#pin-form').addEventListener('submit', e => {

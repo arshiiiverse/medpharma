@@ -18,6 +18,9 @@ A complete, fully working front-end for a fictional online pharmacy serving Chan
 | `orders.html` | Order history with a live status tracker, track by order ID, reorder, cancel, and lab/doctor bookings |
 | `about.html` · `contact.html` · `faq.html` · `legal.html` | Company pages, a validated contact form, searchable FAQs (with `FAQPage` structured data), and privacy, terms and returns |
 | `404.html` | Custom "page not found" page for GitHub Pages |
+| `admin.html` | **Admin panel** (demo login: `admin` / `medpharma`): sales dashboard with charts, order management with status updates the customer sees, product add/edit/delete with stock and visibility, bookings, contact messages, store settings, JSON export and sample data |
+
+> The admin panel and the store share data through `localStorage`, so admin changes appear in the shop in the same browser. There is no server, so the login is a demo gate, not real security.
 
 ## Features on every page
 

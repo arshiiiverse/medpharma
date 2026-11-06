@@ -55,8 +55,10 @@
       const STEPS = ['Order placed', 'Packed', 'Out for delivery', 'Delivered'];
 
       // Demo: status advances with time since the order was placed
+      const KEYS = ['placed', 'packed', 'out', 'delivered'];
       function stage(o) {
         if (o.status === 'cancelled') return -1;
+        if (o.manual) return Math.max(0, KEYS.indexOf(o.status));   // set by the admin panel
         const mins = (Date.now() - new Date(o.date)) / 60000;
         return mins < 2 ? 0 : mins < 5 ? 1 : mins < 10 ? 2 : 3;
       }

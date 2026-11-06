@@ -5,15 +5,17 @@
    ========================================================= */
 (function () {
   'use strict';
-  const { CATEGORIES, PRODUCTS, LAB_TESTS, SPECS, DOCTORS } = window.MP_DATA;
+  const { CATEGORIES, PRODUCTS, ALL_PRODUCTS, LAB_TESTS, SPECS, DOCTORS, SETTINGS } = window.MP_DATA;
   const $ = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
 
   /* ================= HELPERS ================= */
-  const FREE_SHIPPING = 499, SHIPPING_FEE = 49, MAX_QTY = 10;
+  const FREE_SHIPPING = +SETTINGS.freeShipping, SHIPPING_FEE = +SETTINGS.shippingFee, MAX_QTY = 10;
   const rupee = n => '₹' + n.toLocaleString('en-IN');
   const discount = p => Math.round((1 - p.price / p.mrp) * 100);
-  const byId = id => PRODUCTS.find(p => p.id === +id);
+  const byId = id => ALL_PRODUCTS.find(p => p.id === +id);
+  const available = p => p && p.active !== false && p.stock > 0;
+  const maxFor = p => Math.min(MAX_QTY, p.stock);
   const catById = id => CATEGORIES.find(c => c.id === id);
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const productUrl = p => `product.html?id=${p.id}`;
@@ -51,7 +53,7 @@
     return `
       <a href="#main" class="skip">Skip to content</a>
       <div class="strip"><div class="wrap">
-        <p>🚚 <b>Free delivery</b> on orders above ₹${FREE_SHIPPING} · Delivered within 24 hours</p>
+        <p>🚚 ${esc(SETTINGS.announcement)}</p>
         <p class="hide-sm strip-links"><a href="lab-tests.html">Lab Tests</a> · <a href="doctors.html">Doctors</a> · <a href="orders.html">Track Order</a> · <a href="faq.html">Help</a></p>
       </div></div>
       <header class="header">
@@ -138,6 +140,7 @@
             <li><a href="faq.html">FAQs</a></li>
             <li><a href="legal.html">Privacy &amp; terms</a></li>
             <li><a href="https://github.com/arshiiiverse/medpharma">Source code</a></li>
+            <li><a href="admin.html">Admin panel</a></li>
           </ul></div>
         </div>
         <div class="copyright">
@@ -274,13 +277,14 @@
   /* ================= STATE ================= */
   let cart = store.get('cart', {});
   const wished = new Set(store.get('wish', []).filter(id => byId(id)));
-  Object.keys(cart).forEach(id => { if (!byId(id)) delete cart[id]; });
+  Object.keys(cart).forEach(id => { const p = byId(id); if (!available(p)) delete cart[id]; else cart[id] = Math.min(cart[id], maxFor(p)); });
   const cartCount = () => Object.values(cart).reduce((a, b) => a + b, 0);
   const emit = (name, detail) => document.dispatchEvent(new CustomEvent(name, { detail }));
 
   /* ================= PRODUCT CARD (used by every page) ================= */
   function buyControl(p) {
     const q = cart[p.id] || 0;
+    if (!available(p) && !q) return '<span class="add" style="background:var(--bg);color:var(--muted);cursor:default">Out of stock</span>';
     return q
       ? `<div class="stepper" aria-label="Quantity of ${esc(p.name)}"><button type="button" data-dec="${p.id}" aria-label="Remove one">−</button><span>${q}</span><button type="button" data-inc="${p.id}" aria-label="Add one">+</button></div>`
       : `<button type="button" class="add" data-add="${p.id}">${ICON.plus}Add</button>`;
@@ -292,7 +296,7 @@
     return `
       <article class="card" style="animation-delay:${Math.min(n, 12) * 35}ms">
         <div class="thumb">
-          ${p.isNew ? '<span class="badge new">New</span>' : `<span class="badge">-${discount(p)}%</span>`}
+          ${p.stock <= 0 ? '<span class="badge" style="background:var(--ink-soft)">Sold out</span>' : p.isNew ? '<span class="badge new">New</span>' : `<span class="badge">-${discount(p)}%</span>`}
           ${p.rx ? '<span class="badge rx" title="Prescription required">Rx</span>' : ''}
           ${wishButton(p)}
           <a href="${productUrl(p)}" tabindex="-1" aria-hidden="true"><img src="${p.img}" alt="${esc(p.name)}" loading="lazy" width="560" height="373" /></a>
@@ -337,14 +341,16 @@
 
   function setQty(id, qty, bump = true) {
     id = +id;
-    if (qty <= 0) delete cart[id];
-    else cart[id] = Math.min(qty, MAX_QTY);
+    const p = byId(id);
+    if (qty <= 0 || !available(p)) delete cart[id];
+    else cart[id] = Math.min(qty, maxFor(p));
     saveCart(bump);
   }
 
   function addToCart(id, qty = 1, silent) {
     const p = byId(id), have = cart[p.id] || 0;
-    if (have >= MAX_QTY) { toast(`Maximum ${MAX_QTY} per item`); return false; }
+    if (!available(p)) { toast(`${p.name} is out of stock`); return false; }
+    if (have >= maxFor(p)) { toast(p.stock < MAX_QTY ? `Only ${p.stock} left in stock` : `Maximum ${MAX_QTY} per item`); return false; }
     setQty(p.id, have + qty);
     if (!silent) toast(`${p.name} added to cart`, { label: 'View cart', run: () => openPanel('cart') });
     return true;
@@ -498,7 +504,7 @@
     if (!t) return;
     const d = t.dataset;
     if (d.add) addToCart(d.add);
-    if (d.inc) { if ((cart[d.inc] || 0) >= MAX_QTY) toast(`Maximum ${MAX_QTY} per item`); else setQty(d.inc, (cart[d.inc] || 0) + 1); }
+    if (d.inc) { const p = byId(d.inc); if ((cart[d.inc] || 0) >= maxFor(p)) toast(p.stock < MAX_QTY ? `Only ${p.stock} left in stock` : `Maximum ${MAX_QTY} per item`); else setQty(d.inc, (cart[d.inc] || 0) + 1); }
     if (d.dec) setQty(d.dec, (cart[d.dec] || 0) - 1);
     if (d.remove) {
       const id = +d.remove, q = cart[id];
@@ -510,7 +516,7 @@
     if (d.move) { if (!cart[d.move]) addToCart(d.move, 1, true); wished.delete(+d.move); saveWish(); toast('Moved to cart', { label: 'View cart', run: () => openPanel('cart') }); }
     if ('moveAll' in d) {
       let n = 0;
-      [...wished].forEach(id => { if (!cart[id]) { cart[id] = 1; n++; } });
+      [...wished].forEach(id => { if (!cart[id] && available(byId(id))) { cart[id] = 1; n++; } });
       wished.clear(); saveWish(); saveCart(true);
       toast(n ? `${n} item${n === 1 ? '' : 's'} added to cart` : 'All items were already in your cart');
       openPanel('cart');
@@ -637,7 +643,11 @@
       name: $('#co-name').value.trim(), phone: $('#co-phone').value, address: $('#co-address').value.trim(),
       city: $('#co-city').value, pin: $('#co-pin').value, pay: f.pay.value
     };
-    store.set('orders', [order, ...store.get('orders', [])].slice(0, 20));
+    store.set('orders', [order, ...store.get('orders', [])].slice(0, 100));
+    // Reduce stock (the admin panel reads the same list)
+    const stocked = ALL_PRODUCTS.map(p => ({ ...p, stock: Math.max(0, p.stock - (cart[p.id] || 0)) }));
+    store.set('products', stocked);
+    stocked.forEach(s => { byId(s.id).stock = s.stock; });
     const eta = new Date(Date.now() + 24 * 3600 * 1000).toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' });
     const first = esc(order.name.split(' ')[0]);
     const html = `<h3>Order placed, ${first}!</h3><p>${rupee(t.total)} · ${esc(order.pay)}<br />Arriving by <b>${eta}</b> in ${esc(order.city)}.</p><span class="ref">Order ID ${order.id}</span><p style="margin-top:12px"><a class="link-arrow" href="orders.html">Track this order →</a></p>`;
