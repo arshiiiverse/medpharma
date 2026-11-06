@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="assets/admin.css" />
 </head>
 
-<body class="admin">
+<body class="admin" data-page="admin">
   <!-- ================= LOGIN ================= -->
   <div class="login" id="login" hidden>
     <form class="login-card" id="login-form" novalidate>
@@ -25,12 +25,12 @@
       <h1>Admin sign in</h1>
       <p>Manage orders, products, bookings and store settings.</p>
       <div class="form-grid">
-        <div class="field"><label for="l-user">Username</label><input id="l-user" autocomplete="username" /></div>
+        <div class="field"><label for="l-user" id="l-user-label">Username</label><input id="l-user" autocomplete="username" /></div>
         <div class="field"><label for="l-pass">Password</label><input id="l-pass" type="password" autocomplete="current-password" /></div>
       </div>
       <p class="login-err" id="login-err" role="alert"></p>
       <button class="btn btn-dark btn-block" type="submit">Sign in</button>
-      <div class="demo-creds">Demo login — username <code>admin</code>, password <code>medpharma</code>.<br />This is a front-end demo: data is stored in your browser only.</div>
+      <div class="demo-creds" id="demo-creds">Demo login — username <code>admin</code>, password <code>medpharma</code>.<br />This is a front-end demo: data is stored in your browser only.</div>
     </form>
   </div>
 
@@ -58,7 +58,7 @@
         </button>
         <h1 id="view-title">Dashboard</h1>
         <div class="right">
-          <div class="who"><span class="av">A</span><span><b>Admin</b><br />Medpharma store</span></div>
+          <div class="who"><span class="av">A</span><span><b id="who-name">Admin</b><br />Medpharma store</span></div>
         </div>
       </header>
       <main class="content" id="view" tabindex="-1"></main>
@@ -73,7 +73,9 @@
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite"><span class="tick">✓</span><span id="toast-text"></span></div>
 
+  <script src="assets/config.js"></script>
   <script src="assets/data.js"></script>
+  <script src="assets/db.js"></script>
   <script src="assets/admin.js"></script>
 </body>
 </html>

@@ -493,6 +493,7 @@ footer { background: #0c211d; color: #9fb8b1; margin-top: 56px; }
 .success p { color: var(--muted); margin-top: 6px; }
 .success .ref { display: inline-block; margin-top: 14px; background: var(--bg); padding: 8px 14px; border-radius: 999px; font-weight: 700; letter-spacing: .04em; }
 .note { font-size: .78rem; color: var(--muted); margin-top: 12px; text-align: center; }
+.form-err { background: #fdecec; color: var(--danger); border-radius: 10px; padding: 10px 12px; font-size: .85rem; font-weight: 600; margin-top: 14px; }
 
 /* ---------- Toast ---------- */
 .toast { position: fixed; left: 50%; bottom: 24px; z-index: 100; transform: translate(-50%, 150%); opacity: 0; background: var(--ink); color: #fff; padding: 12px 18px; border-radius: 12px; font-size: .9rem; transition: transform .3s, opacity .3s; box-shadow: var(--shadow); max-width: calc(100vw - 32px); display: flex; align-items: center; gap: 10px; }

@@ -29,11 +29,14 @@
 
   <div id="mp-footer"></div>
 
+  <script src="assets/config.js"></script>
   <script src="assets/data.js"></script>
+  <script src="assets/db.js"></script>
+  <script src="assets/boot.js"></script>
   <script src="assets/app.js"></script>
   <script>
     /* ---------- Product page ---------- */
-    (function () {
+    MPReady(function () {
       'use strict';
       const { PRODUCTS, byId, catById, cardHTML, rupee, discount, esc, wishButton } = window.MP;
       const $ = s => document.querySelector(s);
@@ -169,7 +172,7 @@
       $('#related-sub').textContent = `More from ${cat.name} and similar products.`;
       $('#related-all').href = `catalog.html?cat=${cat.id}`;
       $('#related-wrap').hidden = false;
-    })();
+    });
   </script>
 </body>
 </html>

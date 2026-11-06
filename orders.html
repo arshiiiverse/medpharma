@@ -20,13 +20,15 @@
 
   <main id="main" class="wrap">
     <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a><span>/</span><span aria-current="page">My Orders</span></nav>
-    <div class="page-title"><div><h1>My orders & bookings</h1><p>Orders are saved in this browser. In this demo, order status moves forward every few minutes.</p></div></div>
+    <div class="page-title"><div><h1>My orders & bookings</h1><p id="orders-note">Orders are saved in this browser. In this demo, order status moves forward every few minutes.</p></div></div>
 
     <div class="track-box" id="track">
       <h2 style="font-size:1.1rem;font-weight:800">Track an order</h2>
       <form id="track-form">
         <label class="sr-only" for="track-id">Order ID</label>
-        <input id="track-id" placeholder="Enter order ID, e.g. MP-4K2J9Q" autocomplete="off" />
+        <input id="track-id" placeholder="Order ID, e.g. MP-4K2J9Q8A" autocomplete="off" />
+        <label class="sr-only" for="track-phone">Mobile number used for the order</label>
+        <input id="track-phone" inputmode="numeric" maxlength="10" placeholder="Mobile number" style="text-transform:none" hidden />
         <button class="btn btn-dark" type="submit">Track</button>
       </form>
       <p id="track-msg" style="font-size:.9rem;color:var(--muted)"></p>
@@ -45,14 +47,31 @@
 
   <div id="mp-footer"></div>
 
+  <script src="assets/config.js"></script>
   <script src="assets/data.js"></script>
+  <script src="assets/db.js"></script>
+  <script src="assets/boot.js"></script>
   <script src="assets/app.js"></script>
   <script>
-    (function () {
+    MPReady(function () {
       'use strict';
       const { byId, rupee, esc, store, toast } = window.MP;
       const $ = s => document.querySelector(s);
       const STEPS = ['Order placed', 'Packed', 'Out for delivery', 'Delivered'];
+      const live = !!(window.MPDB && MPDB.enabled);
+      let orders = [];
+      if (live) {
+        $('#orders-note').textContent = 'Orders placed on this device are listed below. Track any other order with its ID and mobile number.';
+        $('#track-phone').hidden = false;
+      }
+
+      // Orders come from the database (live) or browser storage (demo)
+      async function loadOrders() {
+        if (!live) { orders = store.get('orders', []).filter(o => Array.isArray(o.items)); return; }
+        try { orders = await MPDB.myOrders(store.get('my-orders', [])); }
+        catch (err) { $('#orders').innerHTML = `<div class="empty"><b>Couldn't load your orders</b>${esc(err.message)}</div>`; throw err; }
+      }
+      const phoneFor = id => (store.get('my-orders', []).find(r => r.id === id) || {}).phone;
 
       // Demo: status advances with time since the order was placed
       const KEYS = ['placed', 'packed', 'out', 'delivered'];
@@ -68,7 +87,8 @@
         const s = stage(o);
         const label = s < 0 ? 'Cancelled' : STEPS[s];
         const cls = s < 0 ? 'cancelled' : s === 3 ? 'delivered' : '';
-        const items = o.items.map(i => ({ ...i, p: byId(i.id) })).filter(i => i.p);
+        // Items keep their own name/image, so they still show if a product is later removed
+        const items = o.items.map(i => { const p = byId(i.id); return { ...i, p: { id: i.id, name: i.name || (p && p.name) || 'Product', img: i.img || (p && p.img) || 'assets/logo-mark.svg' } }; });
         return `
           <article class="order" id="order-${o.id}">
             <div class="order-head">
@@ -90,7 +110,6 @@
       }
 
       function render() {
-        const orders = store.get('orders', []).filter(o => Array.isArray(o.items));
         $('#order-count').textContent = orders.length ? `${orders.length} order${orders.length === 1 ? '' : 's'}` : '';
         $('#orders').innerHTML = orders.length ? orders.map(orderHTML).join('')
           : '<div class="empty"><b>No orders yet</b>When you place an order it will show up here.<div style="margin-top:16px"><a class="btn btn-dark btn-sm" href="catalog.html">Start shopping</a></div></div>';
@@ -103,32 +122,49 @@
           : '<div class="empty"><b>No bookings yet</b><a class="link-arrow" href="lab-tests.html">Book a lab test</a> or <a class="link-arrow" href="doctors.html">consult a doctor</a>.</div>';
       }
 
-      document.addEventListener('click', e => {
+      document.addEventListener('click', async e => {
         const r = e.target.closest('[data-reorder]');
         if (r) {
-          const o = store.get('orders', []).find(x => x.id === r.dataset.reorder);
+          const o = orders.find(x => x.id === r.dataset.reorder);
           let added = 0;
-          o.items.forEach(i => { if (byId(i.id)) { MP.setQty(i.id, Math.min(10, (MP.cart()[i.id] || 0) + i.q)); added++; } });
-          toast(`${added} product${added === 1 ? '' : 's'} added to cart`, { label: 'View cart', run: () => MP.openPanel('cart') });
+          o.items.forEach(i => { const p = byId(i.id); if (p && p.active !== false && p.stock > 0) { MP.setQty(i.id, Math.min(10, (MP.cart()[i.id] || 0) + i.q)); added++; } });
+          toast(added ? `${added} product${added === 1 ? '' : 's'} added to cart` : 'These products are not available right now', added ? { label: 'View cart', run: () => MP.openPanel('cart') } : null);
         }
         const c = e.target.closest('[data-cancel]');
         if (c) {
-          const orders = store.get('orders', []);
-          const o = orders.find(x => x.id === c.dataset.cancel);
-          o.status = 'cancelled';
-          store.set('orders', orders);
-          toast(`Order ${o.id} cancelled`);
+          const id = c.dataset.cancel;
+          if (live) {
+            c.disabled = true; c.textContent = 'Cancelling…';
+            try { await MPDB.cancelOrder(id, phoneFor(id)); await loadOrders(); toast(`Order ${id} cancelled`); }
+            catch (err) { toast(err.message); }
+            render();
+            return;
+          }
+          const all = store.get('orders', []);
+          all.find(x => x.id === id).status = 'cancelled';
+          store.set('orders', all);
+          await loadOrders();
+          toast(`Order ${id} cancelled`);
           render();
         }
       });
 
-      $('#track-form').addEventListener('submit', e => {
+      $('#track-form').addEventListener('submit', async e => {
         e.preventDefault();
         const id = $('#track-id').value.trim().toUpperCase();
-        const o = store.get('orders', []).find(x => x.id === id);
         const msg = $('#track-msg');
         if (!id) { msg.textContent = 'Please enter your order ID.'; return; }
-        if (!o) { msg.innerHTML = `We couldn't find order <b>${esc(id)}</b> in this browser. Check the ID in your order confirmation.`; return; }
+        let o = orders.find(x => x.id === id);
+        if (!o && live) {
+          const phone = $('#track-phone').value.trim();
+          if (!/^[6-9]\d{9}$/.test(phone)) { msg.textContent = 'Please enter the 10-digit mobile number used for this order.'; $('#track-phone').focus(); return; }
+          msg.textContent = 'Looking up your order…';
+          try {
+            const found = await MPDB.myOrders([{ id, phone }]);
+            if (found.length) { MP.rememberOrder(id, phone); await loadOrders(); render(); o = orders.find(x => x.id === id); }
+          } catch (err) { msg.textContent = err.message; return; }
+        }
+        if (!o) { msg.innerHTML = live ? `We couldn't find order <b>${esc(id)}</b> with that mobile number. Check both and try again.` : `We couldn't find order <b>${esc(id)}</b> in this browser. Check the ID in your order confirmation.`; return; }
         const s = stage(o);
         msg.innerHTML = `Order <b>${o.id}</b>: <b style="color:var(--mint-dark)">${s < 0 ? 'Cancelled' : STEPS[s]}</b>.`;
         const card = document.getElementById('order-' + o.id);
@@ -136,9 +172,11 @@
         card.animate([{ boxShadow: '0 0 0 3px var(--mint)' }, { boxShadow: '0 0 0 0 transparent' }], { duration: 1600 });
       });
 
-      render();
-      setInterval(render, 30000);   // refresh demo status
-    })();
+      $('#orders').innerHTML = '<div class="empty">Loading your orders…</div>';
+      loadOrders().then(render).catch(() => {});
+      // Keep statuses fresh (the admin may update them)
+      setInterval(() => loadOrders().then(render).catch(() => {}), live ? 60000 : 30000);
+    });
   </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
    Header, footer, cart, wishlist, checkout and booking forms.
    Exposes window.MP for page scripts.
    ========================================================= */
-(function () {
+window.MPBoot.core(function () {
   'use strict';
   const { CATEGORIES, PRODUCTS, ALL_PRODUCTS, LAB_TESTS, SPECS, DOCTORS, SETTINGS } = window.MP_DATA;
   const $ = (s, c = document) => c.querySelector(s);
@@ -625,9 +625,25 @@
       <div class="sum-row total"><span>To pay</span><span>${rupee(t.total)}</span></div>
       ${t.items.some(i => i.p.rx) ? '<p style="font-size:.8rem;color:var(--blue)">Your cart has a prescription item — our pharmacist will ask for it on delivery.</p>' : ''}`;
   }
-  $('#checkout-form').addEventListener('submit', e => {
+  // Disable the submit button while a request is in flight, and show server errors under the form
+  function busy(form, on, label) {
+    const b = form.querySelector('button[type="submit"]');
+    if (on) { b.dataset.label = b.textContent; b.textContent = label || 'Please wait…'; b.disabled = true; }
+    else { b.textContent = b.dataset.label || b.textContent; b.disabled = false; }
+  }
+  function formError(form, msg) {
+    let p = form.querySelector('.form-err');
+    if (!p) { p = document.createElement('p'); p.className = 'form-err'; p.setAttribute('role', 'alert'); form.querySelector('button[type="submit"]').before(p); }
+    p.textContent = msg || '';
+    p.hidden = !msg;
+  }
+  // Remember the shopper's order IDs (with phone) so "My orders" can look them up
+  function rememberOrder(id, phone) { store.set('my-orders', [{ id, phone }, ...store.get('my-orders', []).filter(o => o.id !== id)].slice(0, 50)); }
+
+  $('#checkout-form').addEventListener('submit', async e => {
     e.preventDefault();
     const f = e.target;
+    formError(f, '');
     const ok = [
       check($('#co-name'), $('#co-name').value.trim().length >= 2),
       check($('#co-phone'), isPhone($('#co-phone').value)),
@@ -638,19 +654,34 @@
     const t = totals();
     const order = {
       id: ref('MP'), date: new Date().toISOString(), status: 'placed',
-      items: t.items.map(i => ({ id: i.p.id, q: i.q, price: i.p.price })),
+      items: t.items.map(i => ({ id: i.p.id, q: i.q, price: i.p.price, name: i.p.name, img: i.p.img })),
       subtotal: t.subtotal, shipping: t.shipping, total: t.total,
       name: $('#co-name').value.trim(), phone: $('#co-phone').value, address: $('#co-address').value.trim(),
       city: $('#co-city').value, pin: $('#co-pin').value, pay: f.pay.value
     };
-    store.set('orders', [order, ...store.get('orders', [])].slice(0, 100));
-    // Reduce stock (the admin panel reads the same list)
-    const stocked = ALL_PRODUCTS.map(p => ({ ...p, stock: Math.max(0, p.stock - (cart[p.id] || 0)) }));
-    store.set('products', stocked);
-    stocked.forEach(s => { byId(s.id).stock = s.stock; });
+
+    if (window.MPDB && MPDB.enabled) {
+      // Real backend: the server checks stock and prices, then returns the real order
+      busy(f, true, 'Placing order…');
+      try {
+        const res = await MPDB.placeOrder(order);
+        Object.assign(order, { id: res.id, subtotal: res.subtotal, shipping: res.shipping, total: res.total, items: res.items });
+        res.items.forEach(i => { const p = byId(i.id); if (p) p.stock = Math.max(0, p.stock - i.q); });
+      } catch (err) {
+        formError(f, err.message);
+        return;
+      } finally { busy(f, false); }
+    } else {
+      store.set('orders', [order, ...store.get('orders', [])].slice(0, 100));
+      // Demo mode: reduce stock in browser storage (the admin panel reads the same list)
+      const stocked = ALL_PRODUCTS.map(p => ({ ...p, stock: Math.max(0, p.stock - (cart[p.id] || 0)) }));
+      store.set('products', stocked);
+      stocked.forEach(s => { byId(s.id).stock = s.stock; });
+    }
+    rememberOrder(order.id, order.phone);
     const eta = new Date(Date.now() + 24 * 3600 * 1000).toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' });
     const first = esc(order.name.split(' ')[0]);
-    const html = `<h3>Order placed, ${first}!</h3><p>${rupee(t.total)} · ${esc(order.pay)}<br />Arriving by <b>${eta}</b> in ${esc(order.city)}.</p><span class="ref">Order ID ${order.id}</span><p style="margin-top:12px"><a class="link-arrow" href="orders.html">Track this order →</a></p>`;
+    const html = `<h3>Order placed, ${first}!</h3><p>${rupee(order.total)} · ${esc(order.pay)}<br />Arriving by <b>${eta}</b> in ${esc(order.city)}.</p><span class="ref">Order ID ${order.id}</span><p style="margin-top:12px"><a class="link-arrow" href="orders.html">Track this order →</a></p>`;
     cart = {};
     saveCart(false);
     showSuccess('checkout', html);
@@ -687,8 +718,21 @@
   });
 
   // ---- Lab test ----
-  $('#lab-form').addEventListener('submit', e => {
+  // Saves a booking to the backend (or browser storage in demo mode); returns its reference
+  async function book(form, b) {
+    if (window.MPDB && MPDB.enabled) {
+      busy(form, true, 'Booking…');
+      try { b.id = await MPDB.addBooking(b); }
+      catch (err) { formError(form, err.message); return null; }
+      finally { busy(form, false); }
+    }
+    saveBooking(b);
+    return b.id;
+  }
+
+  $('#lab-form').addEventListener('submit', async e => {
     e.preventDefault();
+    formError(e.target, '');
     const f = e.target, slot = f.querySelector('input[name="lab-slot"]:checked');
     $('#lab-slots').closest('.field').classList.toggle('invalid', !slot);
     const ok = [
@@ -700,15 +744,16 @@
     if (!ok) { firstInvalidFocus(f); return; }
     const test = LAB_TESTS.find(x => x.id === +$('#lab-test').value);
     const day = new Date($('#lab-date').value + 'T00:00').toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
-    const id = ref('LAB');
-    saveBooking({ id, type: 'lab', title: test.name, price: test.price, when: `${day}, ${slot.value}` });
+    const id = await book(f, { id: ref('LAB'), type: 'lab', title: test.name, price: test.price, when: `${day}, ${slot.value}`, phone: $('#lab-phone').value });
+    if (!id) return;
     showSuccess('lab', `<h3>Lab test booked</h3><p><b>${esc(test.name)}</b> · ${rupee(test.price)}<br />Sample collection on ${day}, ${esc(slot.value)}.<br />${esc(test.fasting)}.</p><span class="ref">Booking ${id}</span>`);
     f.reset(); $('#lab-date').value = iso(tomorrow);
   });
 
   // ---- Consultation ----
-  $('#consult-form').addEventListener('submit', e => {
+  $('#consult-form').addEventListener('submit', async e => {
     e.preventDefault();
+    formError(e.target, '');
     const f = e.target, slot = f.querySelector('input[name="c-slot"]:checked');
     $('#c-slots').closest('.field').classList.toggle('invalid', !slot);
     const ok = [check($('#c-name'), $('#c-name').value.trim().length >= 2), check($('#c-phone'), isPhone($('#c-phone').value)), !!slot].every(Boolean);
@@ -716,8 +761,8 @@
     const spec = SPECS.find(s => s.id === f.spec.value);
     const doc = DOCTORS.find(d => d.id === +$('#c-doctor').value);
     const who = doc ? doc.name : `First available ${spec.name.toLowerCase()}`;
-    const id = ref('DOC');
-    saveBooking({ id, type: 'consult', title: `${who} (${spec.name})`, price: spec.fee, when: slot.value });
+    const id = await book(f, { id: ref('DOC'), type: 'consult', title: `${who} (${spec.name})`, price: spec.fee, when: slot.value, name: $('#c-name').value.trim(), phone: $('#c-phone').value });
+    if (!id) return;
     showSuccess('consult', `<h3>Consultation booked</h3><p>${esc(who)} · ${esc(spec.name)} · ${rupee(spec.fee)}<br /><b>${esc(slot.value)}</b> — we’ll send the video link to +91 ${esc($('#c-phone').value)}.</p><span class="ref">Booking ${id}</span>`);
     f.reset();
   });
@@ -730,5 +775,5 @@
   saveCart(false);
   saveWish();
 
-  window.MP = { CATEGORIES, PRODUCTS, LAB_TESTS, SPECS, DOCTORS, rupee, discount, byId, catById, esc, cardHTML, buyControl, wishButton, addToCart, setQty, toggleWish, openPanel, toast, store, cart: () => cart, wished, productUrl, city: () => city.value };
-})();
+  window.MP = { CATEGORIES, PRODUCTS, LAB_TESTS, SPECS, DOCTORS, rupee, discount, byId, catById, esc, cardHTML, buyControl, wishButton, addToCart, setQty, toggleWish, openPanel, toast, store, cart: () => cart, wished, productUrl, city: () => city.value, rememberOrder };
+});

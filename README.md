@@ -20,7 +20,12 @@ A complete, fully working front-end for a fictional online pharmacy serving Chan
 | `404.html` | Custom "page not found" page for GitHub Pages |
 | `admin.html` | **Admin panel** (demo login: `admin` / `medpharma`): sales dashboard with charts, order management with status updates the customer sees, product add/edit/delete with stock and visibility, bookings, contact messages, store settings, JSON export and sample data |
 
-> The admin panel and the store share data through `localStorage`, so admin changes appear in the shop in the same browser. There is no server, so the login is a demo gate, not real security.
+## Backend (Supabase)
+
+The site works in two modes:
+
+- **Live mode:** connect a free Supabase project. Orders, bookings and messages are then stored in Postgres, and the admin panel signs in with a real Supabase account. Stock and prices are validated on the server, and row-level security controls who can read and change what. See **[SETUP.md](SETUP.md)** and [`supabase/schema.sql`](supabase/schema.sql).
+- **Demo mode:** the default when `assets/config.js` is empty. Everything is saved in the visitor's browser, and the admin uses the demo login `admin` / `medpharma`.
 
 ## Features on every page
 

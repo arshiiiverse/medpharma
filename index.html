@@ -223,11 +223,14 @@
 
   <div id="mp-footer"></div>
 
+  <script src="assets/config.js"></script>
   <script src="assets/data.js"></script>
+  <script src="assets/db.js"></script>
+  <script src="assets/boot.js"></script>
   <script src="assets/app.js"></script>
   <script>
     /* ---------- Home page ---------- */
-    (function () {
+    MPReady(function () {
       'use strict';
       const { CATEGORIES, PRODUCTS, cardHTML, rupee, esc } = window.MP;
       const $ = s => document.querySelector(s);
@@ -274,7 +277,7 @@
         MP.toast('Subscribed! Check your inbox for a welcome offer (demo)');
         e.target.reset();
       });
-    })();
+    });
   </script>
 </body>
 </html>
