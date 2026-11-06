@@ -1,38 +1,55 @@
-# Remedy Lane — Online Pharmacy Website
+<p align="center"><img src="assets/logo.svg" alt="Medpharma" width="260" /></p>
 
-A fully working front-end for a fictional online pharmacy serving Chandigarh, Mohali and Panchkula. It's a concept project designed and built by **Arshdeep Kaur**.
+# Medpharma — Online Pharmacy Website
 
-🌐 **Live demo:** https://arshiiiverse.github.io/remedy-lane/
+A complete, fully working front-end for a fictional online pharmacy serving Chandigarh, Mohali and Panchkula. It's a concept project designed and built by **Arshdeep Kaur**.
 
-## What works
+🌐 **Live demo:** https://arshiiiverse.github.io/medpharma/
 
-- 🛒 **Cart:** add items, change quantities and remove them with undo. A free-delivery progress bar, MRP savings and the delivery fee are calculated live. The cart is saved in the browser, so it survives a refresh.
-- 💳 **Checkout:** validates the name, Indian mobile number, address and Tricity PIN code (160/140/134). It offers cash or UPI on delivery and shows an order confirmation with an order ID and delivery date.
-- 📄 **Prescription upload:** drag and drop or browse for a file, with an image or PDF preview and a 5 MB limit.
-- 🧪 **Lab test booking:** choose a test, a date (tomorrow onwards) and a home-collection time slot.
-- 👩‍⚕️ **Doctor consultation:** choose a speciality and fee; the page shows today's remaining time slots.
-- 🔎 **Search and filters:** header search (also on mobile), a "Find a product" bar (category, brand and name), category tabs and quick filters such as Under ₹500, New Arrivals and Offers.
-- ↕️ **Sorting** by popularity, price, rating or discount.
-- ♡ **Wishlist** saved in the browser.
-- 📱 **Responsive** from 360px phones up to wide desktops.
-- ♿ **Accessible:** keyboard focus is trapped inside open dialogs, Esc closes them, controls have ARIA states, and there's a skip link and reduced-motion support.
-- 🔍 **SEO:** meta description, canonical URL, Open Graph tags and `Pharmacy` structured data (JSON-LD).
+## Pages
+
+| Page | What it does |
+|---|---|
+| `index.html` | Home: hero, product finder, categories, services, best-seller tabs, featured brand, newsletter |
+| `catalog.html` | Full catalogue: filters (category, brand, price, rating, discount, new, hide Rx), search, sorting, pagination, and shareable URLs that work with the back button |
+| `product.html?id=…` | Product page: quantity, Add to cart, Buy now, PIN-code delivery check, benefits, how to use, related products, `Product` structured data |
+| `lab-tests.html` | 10 test packages with filter tabs and sorting; booking with date, time slot and address |
+| `doctors.html` | 10 doctor profiles with speciality filter and search; video consultation booking with time slots |
+| `orders.html` | Order history with a live status tracker, track by order ID, reorder, cancel, and lab/doctor bookings |
+| `about.html` · `contact.html` · `faq.html` · `legal.html` | Company pages, a validated contact form, searchable FAQs (with `FAQPage` structured data), and privacy, terms and returns |
+| `404.html` | Custom "page not found" page for GitHub Pages |
+
+## Features on every page
+
+- 🛒 **Cart drawer:** change quantities, remove with undo, see a free-delivery progress bar and your savings, then check out with form validation (Indian mobile number, Tricity PIN codes).
+- ♡ **Wishlist drawer:** move items to the cart, add all, or clear with undo.
+- 📄 **Prescription upload:** drag and drop, with an image or PDF preview.
+- 💾 **Saved in the browser:** the cart, wishlist, orders, bookings and city are kept in `localStorage`.
+- 📱 **Responsive** from 360px phones to wide desktops, including a slide-out filter drawer on mobile.
+- ♿ **Accessible:** skip link, keyboard focus kept inside open dialogs, Esc to close, ARIA states on controls, reduced-motion support.
+- 🔍 **SEO:** a unique title and description per page, canonical URLs, Open Graph tags, JSON-LD structured data (`Pharmacy`, `Product`, `FAQPage`), `sitemap.xml` and `robots.txt`.
 
 ## Built with
 
-HTML5 · CSS3 (Grid, Flexbox, custom properties) · Vanilla JavaScript · localStorage · GitHub Pages
+HTML5 · CSS3 · Vanilla JavaScript (no frameworks, no build step) · GitHub Pages
 
-There are no frameworks or build tools. Everything is in `index.html`, with the photos in `/images`.
+```
+assets/styles.css   shared styles
+assets/data.js      products, categories, lab tests, doctors
+assets/app.js       header, footer, cart, wishlist, checkout and booking forms
+assets/logo.svg     Medpharma logo (logo-mark.svg = icon)
+images/             product and page photos
+```
 
 ## Run locally
 
-Open `index.html` in a browser, or serve the folder with any static server.
+Serve the folder with any static server, for example `npx http-server`, and open `index.html`.
 
 ## Credits
 
 - Photos from [StockSnap.io](https://stocksnap.io), released under CC0 (public domain). They were resized and compressed for the web.
-- Icons are hand-written inline SVG.
+- The logo and icons are original SVG.
 
 ---
 
-*Remedy Lane is not a real pharmacy. Products, prices and reviews are sample data. No orders are placed, no payment is taken, and uploaded files never leave your browser.*
+*Medpharma here is a fictional demo store. Products, prices, doctors and reviews are sample data. No orders are placed, no payment is taken, and nothing you enter leaves your browser.*
